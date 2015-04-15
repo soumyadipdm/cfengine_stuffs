@@ -1,0 +1,39 @@
+bundle agent my_update_cfe {
+  vars:
+    "cfe_version" string => "3.6.5-1"; 
+    "cfe_name" string => "cfengine-community";
+    "cfe_rpm" string => "x86_64";
+
+  classes:
+    "activate_policy"
+      and => {"generic_host", "redhat"};
+
+    activate_policy::
+      "cfe_already_updated"
+        expression => fileexists("/etc/cfe.d/cfengine-$(cfe_version)");
+
+
+  files:
+    activate_policy.create_cfe_version_file.!cfe_already_updated::
+      "/etc/cfe.d/cfengine-$(cfe_version)"
+        create => "true",
+        perms => mog("0644", "root", "root"),
+        classes => if_repaired("cfe_install_successful");
+
+
+  packages:
+
+    activate_policy.!(cfe_already_updated|cfe_install_successful)::
+      "$(cfe_name)"
+        package_method => yum,
+        package_policy => "update",
+        package_version => "$(cfe_version)",
+        package_architectures => {"$(cfe_rpm)"},
+        package_select => "==",
+        classes => if_repaired("create_cfe_version_file");
+
+
+  reports:
+    activate_policy.cfe_install_successful::
+      "cf3: CFEngine Updated to: $(cfe_version)";
+}

@@ -1,0 +1,20 @@
+bundle agent my_user {
+  vars:
+    "users" slist => {"unixuser"};
+    "password" string => "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
+
+  users:
+    linux::
+      "unixuser"
+        policy => "present",
+        home_dir => "/home/$(users)",
+        password => hashed_password("$(password)"),
+        shell => "/bin/bash",
+        uid => "500",
+        classes => if_repaired("unixuser_created");
+
+  reports:
+    unixuser_created::
+      "cf3: unixuser is created";
+
+}

@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import sys
+import json
+import os.path
+import socket
+
+def main():
+    #range_file_name = "range.json"
+    range_file_name = "/var/cfengine/inputs/config_files_repo/range.json"
+    if not os.path.isfile(range_file_name):
+        sys.exit(1)
+    hostname = socket.getfqdn()
+   
+    with open(range_file_name, "r") as range_file_r:
+        range_dict = json.load(range_file_r)
+
+    for range in range_dict:
+        if hostname in range_dict[range]:
+            print "+{0}".format(range)
+
+
+if __name__ == '__main__':
+    main()
+            

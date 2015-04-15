@@ -1,0 +1,34 @@
+bundle agent my_env {
+  vars:
+    generic_host::
+      "test_dir" string => "/tmp/test";
+      "test_dir_envs" slist => {"prod", "corp", "qa"};
+      "test_dir_alias_file" string => "$(test_dir)/alias";
+      "ruby_version" string => "ruby-1.2.3";
+      "my_arr[default]" string => "$(ruby_version)";
+
+  files:
+    generic_host::
+      "$(test_dir_alias_file)"
+        perms => mog("0644", "unixuser", "unixuser"),
+        create => "true",
+        edit_line => set_variable_values("my_env.my_arr"),
+        classes => if_repaired("$(test_dir_alias_file)_modified");
+
+    generic_host::
+      "$(test_dir)/$(test_dir_envs)/default"
+        create => "true",
+        link_from => ln_s("$(test_dir_alias_file)"),
+	move_obstructions => "true",
+        classes => if_repaired("$(test_dir)/$(test_dir_envs)/default_repaired");
+
+
+  reports:
+    generic_host::
+      "cf3: $(test_dir_alias_file) modified"
+        ifvarclass => canonify("$(test_dir_alias_file)_modified");
+
+    generic_host::
+      "cf3: $(test_dir)/$(test_dir_envs)/default created/modified"
+        ifvarclass => canonify("$(test_dir)/$(test_dir_envs)/default_repaired");
+}

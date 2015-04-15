@@ -1,0 +1,15 @@
+bundle agent my_motd {
+	vars:
+          "source" string => "/var/cfengine/inputs/templates/host_info_report.mustache";
+          "destination" string => "/etc/motd";
+
+        files:
+          generic_host::
+             "$(destination)" 
+               create => "true",
+               perms => mog("644", "root", "root"),
+               edit_defaults => empty,
+               action => if_elapsed("60"),
+               edit_template => "$(source)",
+               template_method => "mustache";
+}

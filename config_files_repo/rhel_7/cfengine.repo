@@ -1,0 +1,6 @@
+[cfengine-com]
+name=cfengine-com
+baseurl=http://192.168.56.201/cfengine-el7
+#baseurl=http://cfengine.com/pub/yum/$basearch
+enabled=1
+gpgcheck=0

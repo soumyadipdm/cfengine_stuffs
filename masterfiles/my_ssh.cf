@@ -1,0 +1,20 @@
+bundle agent my_ssh {
+	vars:
+          "sshd_config" string => "/etc/ssh/sshd_config";
+          "sshd[UseDNS]" string => "no";
+
+	files:
+          generic_host::
+            "$(sshd_config)"
+              edit_line => set_config_values("my_ssh.sshd"),
+              classes => if_repaired("restart_sshd");
+
+        commands:
+          generic_hosts.restart_sshd::
+            "/sbin/service sshd reload"
+            classes => if_repaired("sshd_reloaded");
+
+	reports:
+          sshd_reloaded::
+            "cf3: SSHD config changed and reloaded";
+}

@@ -1,0 +1,45 @@
+bundle agent my_services {
+    vars:
+      "mysql" slist => {
+                         "mysqld",
+                       };
+      "http" slist => {
+                        "httpd",
+                      };
+
+    processes:
+      generic_host.!ubuntu_desktop::
+        "/usr/sbin/sshd"
+          restart_class => "sshd_stopped";
+
+      mysql_server::
+        "^.*mysqld\s+.*$"
+        restart_class => "restart_mysql";
+
+    services:
+      mysql_server.restart_mysql::
+        "mysqld"
+          service_policy => "start",
+          classes => if_repaired("mysqld_started");
+
+      cfe_mps.!httpd_started::
+        "httpd"
+          service_policy => "start",
+          classes => if_repaired("httpd_started");
+
+      generic_host.sshd_stopped::
+         "sshd"
+           service_policy => "start",
+           classes => if_repaired("sshd_running");
+           
+
+    reports:
+      mysqld_started::
+        "mysqld was not running. started it.";
+      
+      sshd_running::
+        "SSHD running.";
+
+      httpd_started::
+        "HTTP service started";
+}

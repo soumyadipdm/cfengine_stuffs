@@ -1,0 +1,24 @@
+bundle agent my_autofs {
+	vars:
+          "autofs_files" slist => {
+                                    "auto.master",
+                                    "auto.home",
+                                  };
+
+	files:
+          generic_host.!(cfe_mps|ubuntu_desktop)::
+            "/etc/$(autofs_files)"
+	      perms => mog("0644", "root", "root"),
+              copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/$(autofs_files)"),
+              classes => if_repaired("autofs_copied");
+
+	processes:
+	  generic_host::
+	    "/usr/sbin/automount"
+	      restart_class => "automount_not_running";
+
+        services:
+          generic_host.(automount_not_running|autofs_copied)::
+            "autofs"
+              service_policy => "start";
+}

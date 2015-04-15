@@ -1,0 +1,10 @@
+bundle agent my_range {
+    files:
+      "/etc/range.json"
+          create => "true",
+          copy_from => local_dcp("/var/cfengine/inputs/config_files_repo/range.json");
+
+    classes:
+      linux::
+        "define_range_classes" expression => usemodule("raise_class", "");
+}
