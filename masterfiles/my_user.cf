@@ -1,20 +1,41 @@
 bundle agent my_user {
   vars:
-    "users" slist => {"unixuser"};
-    "password" string => "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
+      "users" slist => { "unixuser" };
+      "password[unixuser]"
+        string =>
+          "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
+
+      "privileged_users" slist => { "unixuser" };
 
   users:
     linux::
-      "unixuser"
+      "$(users)"
         policy => "present",
         home_dir => "/home/$(users)",
-        password => hashed_password("$(password)"),
+        password => hashed_password("$(password[$(users)])"),
         shell => "/bin/bash",
-        uid => "500",
-        classes => if_repaired("unixuser_created");
+        # uid => "500",
+        classes => if_repaired("$(users)_created");
+
+  files:
+    linux::
+      "/etc/sudoers.d/$(privileged_users)"
+        perms => mog("0440", "root", "root"),
+        create => "true",
+        edit_defaults => empty,
+        edit_line => insert_user("$(privileged_users)"),
+        classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
   reports:
-    unixuser_created::
-      "cf3: unixuser is created";
+    linux::
+      "cf3: $(users) is created" ifvarclass => "$(users)_created";
 
+    linux::
+      "cf3: /etc/sudoers.d/$(privileged_users) sudoers installed"
+        ifvarclass => "$(privileged_users)_sudoers_repaired";
+}
+
+bundle edit_line insert_user(user) {
+  insert_lines:
+      "$(user)    ALL=(ALL) ALL";
 }

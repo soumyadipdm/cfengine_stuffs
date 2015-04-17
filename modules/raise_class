@@ -6,7 +6,6 @@ import os.path
 import socket
 
 def main():
-    #range_file_name = "range.json"
     range_file_name = "/var/cfengine/inputs/config_files_repo/range.json"
     if not os.path.isfile(range_file_name):
         sys.exit(1)
@@ -19,6 +18,8 @@ def main():
         if hostname in range_dict[range]:
             print "+{0}".format(range)
 
+    # all are under generic_host
+    print "+generic_host"
 
 if __name__ == '__main__':
     main()

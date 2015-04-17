@@ -1,7 +1,7 @@
 bundle agent my_resolv {
-    files:
-      generic_host.linux::
-        "/etc/resolv.conf"
-          perms => mog("0644", "root", "root"),
-          copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/resolv.conf");
+  files:
+    generic_host.linux.!cfe_mps::
+      "/etc/resolv.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/resolv.conf");
 }

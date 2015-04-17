@@ -1,6 +1,7 @@
 bundle agent my_mustache {
   vars:
-    "state" data => datastate();
+      "state" data => datastate();
+
   classes:
     linux::
       "etc_motd_exists" expression => fileexists("/etc/motd");

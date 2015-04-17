@@ -1,23 +1,22 @@
 bundle agent my_test {
-    classes:
-      linux.!ubuntu_desktop::
-          "tmp_cf_file_exists" and => { fileexists("/tmp/cf_file"), islink("/tmp/cf_file")};
+  classes:
+    linux.!ubuntu_desktop::
+      "tmp_cf_file_exists" and => { fileexists("/tmp/cf_file"), islink("/tmp/cf_file") };
 
-    files:
-      linux.!tmp_cf_file_exists::
-        "/tmp/cf_file"
-          create => "true";
+  files:
+    linux.!tmp_cf_file_exists::
+      "/tmp/cf_file" create => "true";
 
-    reports:
-      linux.tmp_cf_file_exists::
-        "/tmp/cf_file exists and it's a link";
+  reports:
+    linux.tmp_cf_file_exists::
+      "/tmp/cf_file exists and it's a link";
 
-      linux.!tmp_cf_file_exists::
-        "/tmp/cf_file does not exist or maybe its not a link";
+    linux.!tmp_cf_file_exists::
+      "/tmp/cf_file does not exist or maybe its not a link";
 
-      cfe_mps::
-        "range is all set!!!";
+    cfe_mps::
+      "range is all set!!!";
 
-      generic_host::
-	"$(sys.local_libdir)";
+    generic_host::
+      "$(sys.local_libdir)";
 }

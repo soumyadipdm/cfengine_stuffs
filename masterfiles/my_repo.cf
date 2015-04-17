@@ -1,17 +1,15 @@
 bundle agent my_repo {
-	vars:
-          "repofiles" slist => {
-                                 "CentOS-Media.repo",
-                                 "epel.repo",
-                                 "cfengine.repo",
-                               };
+  vars:
+      "repofiles" slist => { "CentOS-Media.repo", "epel.repo", "cfengine.repo" };
 
-    	files:
-          (centos_6|rhel_6).!(cfe_mps|ubuntu_desktop)::
-            "/etc/yum.repos.d/$(repofiles)"
-              copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_6/$(repofiles)");
-	  
-	  (centos_7|rhel_7).!(cfe_mps|ubuntu_desktop)::
-	    "/etc/yum.repos.d/$(repofiles)"
-	      copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_7/$(repofiles)");
+  files:
+    (centos_6|rhel_6).!(cfe_mps|ubuntu_desktop)::
+      "/etc/yum.repos.d/$(repofiles)"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_6/$(repofiles)");
+
+    (centos_7|rhel_7).!(cfe_mps|ubuntu_desktop)::
+      "/etc/yum.repos.d/$(repofiles)"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_7/$(repofiles)");
 }

@@ -4,6 +4,28 @@
 #
 ###############################################################################
 
+bundle common custom_policy {
+  vars:
+    "custom_bundle_inputs[my_autofs]" string => "my_custom_promises/my_autofs.cf";
+    "custom_bundle_inputs[my_dns]" string => "my_custom_promises/my_dns.cf";
+    "custom_bundle_inputs[my_user]" string => "my_custom_promises/my_user.cf";
+    "custom_bundle_inputs[my_motd]" string => "my_custom_promises/my_motd.cf";
+    "custom_bundle_inputs[my_ssh]" string => "my_custom_promises/my_ssh.cf";
+    "custom_bundle_inputs[my_package]" string => "my_custom_promises/my_package.cf";
+    "custom_bundle_inputs[my_range]" string => "my_custom_promises/my_range.cf";
+    "custom_bundle_inputs[my_repo]" string => "my_custom_promises/my_repo.cf";
+    "custom_bundle_inputs[my_services]" string => "my_custom_promises/my_services.cf";
+    "custom_bundle_inputs[my_test]" string => "my_custom_promises/my_test.cf";
+    "custom_bundle_inputs[my_mustache]" string => "my_custom_promises/my_mustache.cf";
+    "custom_bundle_inputs[my_env]" string => "my_custom_promises/my_env.cf";
+    "custom_bundle_inputs[my_update_cfe]" string => "my_custom_promises/my_update_cfe.cf";
+    "custom_bundle_inputs[my_resolv]" string => "my_custom_promises/my_resolv.cf";
+    "custom_bundle_inputs[my_log]" string => "my_custom_promises/my_log.cf";
+
+    "custom_bundles" slist => getindices("custom_bundle_inputs");
+    "custom_inputs" slist  => getvalues("custom_bundle_inputs");
+}
+
 body common control
 
 {
@@ -27,23 +49,7 @@ body common control
                           cfe_internal_management,   # See cfe_internal/CFE_cfengine.cf
                           service_catalogue,
                           @(cfengine_enterprise_hub_ha.management_bundles),
-                          #cfengine_stdlib,
-                         # custom policies
-                          my_range,
-                          my_ssh,
-                          my_autofs,
-                          my_dns,
-			  my_user,
-                          my_motd,
-                          my_package,
-                          my_repo,
-                          my_services,
-                          my_test,
-                          #configure_network_interfaces,
-                          my_mustache,
-                          my_env,
-                          my_update_cfe,
-                          my_resolv,
+                          @(custom_policy.custom_bundles),
 
       };
 
@@ -85,26 +91,11 @@ body common control
 
                 # List of services here
                   "services/file_change.cf",
-                # List of custom promises
-                  "my_custom_promises/my_autofs.cf",
-                  "my_custom_promises/my_dns.cf",
-                  "my_custom_promises/my_user.cf",
-                  "my_custom_promises/my_motd.cf",
-                  "my_custom_promises/my_ssh.cf",
-                  "my_custom_promises/my_package.cf",
-                  "my_custom_promises/my_range.cf",
-                  "my_custom_promises/my_repo.cf",
-                  "my_custom_promises/my_services.cf",
-                  "my_custom_promises/my_test.cf",
-                  #"my_custom_promises/configure_network_interfaces.cf",
-                  "my_custom_promises/my_mustache.cf",
-                  "my_custom_promises/my_env.cf",
-                  "my_custom_promises/my_update_cfe.cf",
-                  "my_custom_promises/my_resolv.cf",
+                  @(custom_policy.custom_inputs),
 
       };
 
-      version => "CFEngine Promises.cf 3.6.4";
+      version => "CFEngine Promises.cf 3.6.5";
 
       # Uncomment to connect to the hub using latest protocol.
       #protocol_version => "latest";
@@ -193,7 +184,6 @@ bundle common cfengine_stdlib
     !(cfengine_3_4|cfengine_3_5)::
       # CFEngine 3.6 and higher can include through a secondary file
       "inputs" slist => { "$(sys.local_libdir)/stdlib.cf" };
-      #"inputs" slist => { "$(sys.workdir)/inputs/lib/3.6/stdlib.cf" };
 
   reports:
     verbose_mode::
