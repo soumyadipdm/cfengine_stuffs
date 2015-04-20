@@ -12,7 +12,7 @@ bundle agent my_autofs {
         classes => if_repaired("autofs_copied");
 
   packages:
-    generic_host.!(cfe_mps|ubuntu_desktop)::
+    linux.generic_host.!(cfe_mps|ubuntu_desktop)::
       "$(auto_package)"
         package_method => yum_rpm_permissive,
         package_architectures => { "x86_64" },

@@ -1,5 +1,8 @@
 bundle agent my_log {
+  vars:
+      "log_files" slist => { "/var/log/messages", "/var/log/syslog", "/var/adm/messages" };
+
   files:
-    linux::
-      "/var/log/messages" perms => mog("0644", "root", "root");
+    any::
+      "$(log_files)" perms => mog("0644", "root", "root");
 }

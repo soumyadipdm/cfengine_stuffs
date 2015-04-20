@@ -4,21 +4,18 @@ bundle agent my_dns {
       "dns_services" slist => { "named" };
       "architectures" slist => { "x86_64" };
 
-  # packages:
-  #          mns_server::
-  #            "$(dns_packages)"
-  #              package_method => yum_noversion,
-  #              package_select => "==",
-  #              package_architectures => { "x86_64" },
-  #              package_policy => "add",
-  #              classes => if_repaired("dns_installed");
-
   classes:
     mns_server::
       "bind_installed" expression => fileexists("/usr/sbin/named");
 
+  packages:
+    mns_server.!bind_installed::
+      "$(dns_packages)"
+        package_method => generic,
+        package_policy => "addupdate";
+
   processes:
-    mns_server.bind_installed::
+    mns_server::
       "/usr/sbin/named" restart_class => "restart_named";
 
   services:
@@ -26,10 +23,6 @@ bundle agent my_dns {
       "$(dns_services)"
         service_policy => "start",
         classes => if_repaired("dns_service_up");
-
-  commands:
-    mns_server.!bind_installed::
-      "/usr/bin/yum -y install $(dns_packages)" classes => if_repaired("dns_installed");
 
   reports:
     mns_server.dns_service_up::

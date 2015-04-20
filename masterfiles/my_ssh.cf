@@ -4,14 +4,20 @@ bundle agent my_ssh {
       "sshd[UseDNS]" string => "no";
 
   files:
-    generic_host::
+    generic_host.linux::
       "$(sshd_config)"
         edit_line => set_config_values("my_ssh.sshd"),
         classes => if_repaired("restart_sshd");
 
-  commands:
-    generic_hosts.restart_sshd::
-      "/sbin/service sshd reload" classes => if_repaired("sshd_reloaded");
+  processes:
+    generic_hosts.linux::
+      "/usr/sbin/sshd" restart_class => "start_sshd";
+
+  services:
+    generic_hosts.(start_sshd|restart_sshd)::
+      "sshd"
+        service_policy => "start",
+        classes => if_repaired("sshd_reloaded");
 
   reports:
     sshd_reloaded::

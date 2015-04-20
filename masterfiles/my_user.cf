@@ -1,24 +1,35 @@
 bundle agent my_user {
   vars:
+    any::
       "users" slist => { "unixuser" };
       "password[unixuser]"
         string =>
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
 
       "privileged_users" slist => { "unixuser" };
+      "PS1_prompt" string => "export PS1=\"\[\e[00;31m\]{\[\e[0m\]\[\e[00;36m\]\u\[\e[0m\]\[\e[00;33m\]@\[\e[0m\]\[\e[00;36m\]\h\[\e[0m\]\[\e[00;31m\]}\[\e[0m\]\[\e[00;34m\][\[\e[0m\]\[\e[00;32m\]\W\[\e[0m\]\[\e[00;37m\]|\[\e[0m\]\[\e[00;32m\]\A\[\e[0m\]\[\e[00;34m\]]\[\e[0m\]\[\e[00;31m\]->\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\"";
+
+    linux::
+      "homedir"
+        string => "/home/",
+        policy => "free";
+    solaris::
+      "homedir"
+        string => "/export/home/",
+        policy => "free";
 
   users:
-    linux::
+    generic_host::
       "$(users)"
         policy => "present",
-        home_dir => "/home/$(users)",
+        home_dir => "$(homedir)$(users)",
         password => hashed_password("$(password[$(users)])"),
         shell => "/bin/bash",
         # uid => "500",
         classes => if_repaired("$(users)_created");
 
   files:
-    linux::
+    generic_host::
       "/etc/sudoers.d/$(privileged_users)"
         perms => mog("0440", "root", "root"),
         create => "true",
@@ -26,11 +37,15 @@ bundle agent my_user {
         edit_line => insert_user("$(privileged_users)"),
         classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
+    generic_host::
+      "$(homedir)$(users)/.bashrc"
+        edit_line => insert_lines("$(PS1_prompt)");
+
   reports:
-    linux::
+    generic_host::
       "cf3: $(users) is created" ifvarclass => "$(users)_created";
 
-    linux::
+    generic_host::
       "cf3: /etc/sudoers.d/$(privileged_users) sudoers installed"
         ifvarclass => "$(privileged_users)_sudoers_repaired";
 }

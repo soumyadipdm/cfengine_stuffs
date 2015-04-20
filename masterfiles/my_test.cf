@@ -1,17 +1,17 @@
 bundle agent my_test {
   classes:
-    linux.!ubuntu_desktop::
+    generic_host.!ubuntu_desktop::
       "tmp_cf_file_exists" and => { fileexists("/tmp/cf_file"), islink("/tmp/cf_file") };
 
   files:
-    linux.!tmp_cf_file_exists::
+    generic_host.!tmp_cf_file_exists::
       "/tmp/cf_file" create => "true";
 
   reports:
-    linux.tmp_cf_file_exists::
+    generic_host.tmp_cf_file_exists::
       "/tmp/cf_file exists and it's a link";
 
-    linux.!tmp_cf_file_exists::
+    genric_host.!tmp_cf_file_exists::
       "/tmp/cf_file does not exist or maybe its not a link";
 
     cfe_mps::

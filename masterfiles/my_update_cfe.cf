@@ -18,7 +18,7 @@ bundle agent my_update_cfe {
         classes => if_repaired("cfe_install_successful");
 
   packages:
-    activate_policy.!(cfe_already_updated|cfe_install_successful)::
+    linux.activate_policy.!(cfe_already_updated|cfe_install_successful)::
       "$(cfe_name)"
         package_method => yum,
         package_policy => "update",

@@ -21,10 +21,10 @@ bundle agent my_package {
                                     "perl-libwww-perl",
                                     };
       "mysql_db_server" slist => { "mysql-server", "mysql" };
-      "tools" slist => {"bind-utils"};
+      "tools" slist => { "bind-utils" };
 
   packages:
-    generic_host::
+    linux.generic_host::
       "$(tools)"
         package_method => generic,
         package_policy => "addupdate";
