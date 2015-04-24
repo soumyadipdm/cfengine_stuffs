@@ -1,0 +1,35 @@
+bundle agent my_ntp {
+  vars:
+    linux::
+      "ntp_conf_file" 
+        string => "/etc/ntp.conf",
+        policy => "free";
+
+    centos::
+      "centos_ntp_server_regex"
+        string => "server [0-9]\.centos\.pool\.ntp\.org iburst",
+        policy => "free";
+
+      "ntp_server" string => " server app01.local.net iburst";
+
+  files:
+    centos.!mps_server::
+      "$(ntp_conf_file)"
+        edit_line => regex_replace("$(centos_ntp_server_regex)", "$(ntp_server)"),
+        classes => if_repaired("ntp_conf_modified");
+
+  processes:
+    centos::
+      "ntpd"
+        restart_class => "restart_ntpd";
+
+  services:
+    centos|restart_ntpd|ntp_conf_modified::
+      "ntpd"
+        service_policy => "start",
+        classes => if_repaired("ntpd_restarted");
+
+  reports:
+    ntpd_restarted::
+      "cf3: ntpd has been restarted";
+}

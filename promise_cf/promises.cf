@@ -20,6 +20,7 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_update_cfe]" string => "my_custom_promises/my_update_cfe.cf";
       "custom_bundle_inputs[my_resolv]" string => "my_custom_promises/my_resolv.cf";
       "custom_bundle_inputs[my_log]" string => "my_custom_promises/my_log.cf";
+      "custom_bundle_inputs[my_ntp]" string => "my_custom_promises/my_ntp.cf";
 
       "custom_bundles" slist => getindices("custom_bundle_inputs");
       "custom_inputs" slist => getvalues("custom_bundle_inputs");
