@@ -1,7 +1,7 @@
 bundle agent my_ntp {
   vars:
     linux::
-      "ntp_conf_file" 
+      "ntp_conf_file"
         string => "/etc/ntp.conf",
         policy => "free";
 
@@ -11,17 +11,36 @@ bundle agent my_ntp {
         policy => "free";
 
       "ntp_server" string => " server app01.local.net iburst";
+      "ntp_packages" slist => { "ntp", "ntpdate" };
+
+      "timezone[ZONE]" string => "Asia/Kolkata";
 
   files:
-    centos.!mps_server::
+    centos.!cfe_mps::
       "$(ntp_conf_file)"
         edit_line => regex_replace("$(centos_ntp_server_regex)", "$(ntp_server)"),
         classes => if_repaired("ntp_conf_modified");
 
+    centos::
+      "/etc/sysconfig/clock"
+        perms => mog("0644", "root", "root"),
+        create => "true",
+        edit_line => set_quoted_values("timezone");
+
+    centos::
+      "/etc/localtime"
+        link_from => "/usr/share/zoneinfo/Asia/Kolkata",
+        move_obstructions => "true";
+
+  packages:
+    centos::
+      "$(ntp_packages)"
+        package_method => generic,
+        package_policy => "add";
+
   processes:
     centos::
-      "ntpd"
-        restart_class => "restart_ntpd";
+      "ntpd" restart_class => "restart_ntpd";
 
   services:
     centos|restart_ntpd|ntp_conf_modified::

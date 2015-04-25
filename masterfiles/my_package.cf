@@ -21,7 +21,7 @@ bundle agent my_package {
                                     "perl-libwww-perl",
                                     };
       "mysql_db_server" slist => { "mysql-server", "mysql" };
-      "tools" slist => { "bind-utils" };
+      "tools" slist => { "bind-utils", "htop" };
 
   packages:
     linux.generic_host::

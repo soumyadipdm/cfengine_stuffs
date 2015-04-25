@@ -7,7 +7,9 @@ bundle agent my_user {
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
 
       "privileged_users" slist => { "unixuser" };
-      "PS1_prompt" string => "export PS1=\"\[\e[00;31m\]{\[\e[0m\]\[\e[00;36m\]\u\[\e[0m\]\[\e[00;33m\]@\[\e[0m\]\[\e[00;36m\]\h\[\e[0m\]\[\e[00;31m\]}\[\e[0m\]\[\e[00;34m\][\[\e[0m\]\[\e[00;32m\]\W\[\e[0m\]\[\e[00;37m\]|\[\e[0m\]\[\e[00;32m\]\A\[\e[0m\]\[\e[00;34m\]]\[\e[0m\]\[\e[00;31m\]->\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\"";
+      "PS1_prompt"
+        string =>
+          "export PS1=\"\[\e[00;31m\]{\[\e[0m\]\[\e[00;36m\]\u\[\e[0m\]\[\e[00;33m\]@\[\e[0m\]\[\e[00;36m\]\h\[\e[0m\]\[\e[00;31m\]}\[\e[0m\]\[\e[00;34m\][\[\e[0m\]\[\e[00;32m\]\W\[\e[0m\]\[\e[00;37m\]|\[\e[0m\]\[\e[00;32m\]\A\[\e[0m\]\[\e[00;34m\]]\[\e[0m\]\[\e[00;31m\]->\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\"";
 
     linux::
       "homedir"
@@ -38,8 +40,7 @@ bundle agent my_user {
         classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
     generic_host::
-      "$(homedir)$(users)/.bashrc"
-        edit_line => insert_lines("$(PS1_prompt)");
+      "$(homedir)$(users)/.bashrc" edit_line => insert_lines("$(PS1_prompt)");
 
   reports:
     generic_host::

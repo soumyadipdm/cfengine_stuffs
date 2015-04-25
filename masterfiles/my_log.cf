@@ -1,6 +1,14 @@
 bundle agent my_log {
   vars:
-      "log_files" slist => { "/var/log/messages", "/var/log/syslog", "/var/adm/messages" };
+    centos::
+      "log_files"
+        slist => { "/var/log/messages", "/var/log/syslog" },
+        policy => "free";
+
+    solaris::
+      "log_files"
+        slist => { "/var/adm/messages" },
+        policy => "free";
 
   files:
     any::

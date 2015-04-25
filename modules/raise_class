@@ -11,16 +11,10 @@ def main():
         sys.exit(1)
     hostname = socket.getfqdn()
    
-    ver = sys.version_info[:2]
-    version = ver[0] * 10 + ver[1]
-     
-    if version >= 26:
-        with open(range_file_name, "r") as range_file_r:
-            range_dict = json.load(range_file_r)
-    else:
-        range_file_r = open(range_file_name, "r")
-        range_dict = json.load(range_file_r)
-        range_file_r.close()
+    # without "with...as" for older python
+    range_file_r = open(range_file_name, "r")
+    range_dict = json.load(range_file_r)
+    range_file_r.close()
 
     for range in range_dict:
         if hostname in range_dict[range]:
