@@ -29,7 +29,7 @@ bundle agent my_ntp {
 
     centos::
       "/etc/localtime"
-        link_from => "/usr/share/zoneinfo/Asia/Kolkata",
+        link_from => ln_s("/usr/share/zoneinfo/Asia/Kolkata"),
         move_obstructions => "true";
 
   packages:
