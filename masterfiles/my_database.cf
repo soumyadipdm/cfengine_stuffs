@@ -1,0 +1,48 @@
+bundle agent my_database {
+  vars:
+      "db_packages" slist => { "mysql-server", "mysql" };
+
+  packages:
+    mysql_server::
+      "$(db_packages)"
+        package_method => yum_rpm_permissive,
+        package_policy => "add",
+        package_architectures => { "x86_64" };
+
+  processes:
+    mysql_server::
+      "mysqld" restart_class => "restart_mysqld";
+
+  services:
+    mysql_server|restart_mysqld::
+      "mysqld"
+        service_policy => "start",
+        classes => if_repaired("mysqld_restarted");
+
+  databases:
+    mysql_server::
+      "mydb/employee"
+        database_operation => "create",
+        database_type => "sql",
+        database_columns => { "id,int,", "name,varchar,256", "job,varchar,256" },
+        database_server => myserver,
+        classes => if_repaired("mysql_db_created");
+
+  reports:
+    mysql_server.mysqld_restarted::
+      "cf3: mysqld has been restarted successfully";
+
+    mysql_server.mysql_db_created::
+      "cf3: db table has been created";
+}
+
+body database_server myserver {
+  any::
+    db_server_owner => "root";
+    db_server_password => "asd@123";
+    db_server_host => "localhost";
+    db_server_type => "mysql";
+    db_server_connection_db => "mysql";
+}
+
+# vim: ts=2 sw=2

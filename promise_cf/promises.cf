@@ -13,14 +13,15 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_ssh]" string => "my_custom_promises/my_ssh.cf";
       "custom_bundle_inputs[my_package]" string => "my_custom_promises/my_package.cf";
       "custom_bundle_inputs[my_repo]" string => "my_custom_promises/my_repo.cf";
+      "custom_bundle_inputs[my_freespace]" string => "my_custom_promises/my_freespace.cf";
       "custom_bundle_inputs[my_services]" string => "my_custom_promises/my_services.cf";
       "custom_bundle_inputs[my_test]" string => "my_custom_promises/my_test.cf";
-      "custom_bundle_inputs[my_mustache]" string => "my_custom_promises/my_mustache.cf";
       "custom_bundle_inputs[my_env]" string => "my_custom_promises/my_env.cf";
       "custom_bundle_inputs[my_update_cfe]" string => "my_custom_promises/my_update_cfe.cf";
       "custom_bundle_inputs[my_resolv]" string => "my_custom_promises/my_resolv.cf";
       "custom_bundle_inputs[my_log]" string => "my_custom_promises/my_log.cf";
       "custom_bundle_inputs[my_ntp]" string => "my_custom_promises/my_ntp.cf";
+      "custom_bundle_inputs[my_database]" string => "my_custom_promises/my_database.cf";
 
       "custom_bundles" slist => getindices("custom_bundle_inputs");
       "custom_inputs" slist => getvalues("custom_bundle_inputs");

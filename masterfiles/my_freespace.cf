@@ -1,0 +1,30 @@
+bundle agent my_freespace {
+  vars:
+      "filesystems" slist => { "/", "/var", "/tmp" };
+      "cfs" slist => { canonify("$(filesystems)") };
+      "free[$(cfs)]" int => diskfree("$(filesystems)");
+
+  classes:
+    any::
+      "execute_hourly" expression => splayclass("$(sys.host)$(sys.ipv4)", "hourly");
+
+  storage:
+    any.execute_hourly::
+      "$(filesystems)"
+        volume => check_freespace("10%"),
+        classes => if_repaired("$(filesystems)_not_ok");
+
+  reports:
+    any.execute_hourly::
+      "cf3: $(filesystems) has $(free[$(cfs)]) KB free space"
+        ifvarclass => not(canonify("$(filesystems)_not_ok"));
+
+    any.execute_hourly::
+      "cf3: WARNING: $(filesystems) has only $(free[$(cfs)]) KB free space"
+        ifvarclass => canonify("$(filesystems)_not_ok");
+}
+
+body volume check_freespace(free) {
+    check_foreign => "false";
+    freespace => "$(free)";
+}

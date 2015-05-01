@@ -1,0 +1,9 @@
+driftfile /var/lib/ntp/drift
+restrict default kod nomodify notrap nopeer noquery
+restrict -6 default kod nomodify notrap nopeer noquery
+restrict {{vars.my_ntp.interface}}
+{{#vars.my_ntp.ntp_servers}}
+server {{.}} iburst
+{{/vars.my_ntp.ntp_servers}}
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
