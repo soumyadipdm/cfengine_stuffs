@@ -10,6 +10,10 @@ roles_file="/etc/roles_classes"
 # raise generic_hosts class, 
 # so CFE can configure the most basic stuffs
 
-[[ -z "${roles_file}" ]] || ( echo "+generic_hosts"; exit 0 )
+if [[ ! -s "${roles_file}" ]]
+then
+    echo "+generic_host"
 
-cat "${roles_file}"
+else
+    cat "${roles_file}"
+fi
