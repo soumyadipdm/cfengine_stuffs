@@ -28,7 +28,12 @@ bundle common custom_policy {
 
   classes:
     any::
-      "define_range_classes" expression => usemodule("raise_class", "");
+      "extract_roles_classes" 
+        expression => usemodule("extract_raise_class", ""),
+        action => if_elapsed("30");
+
+    any::
+      "define_roles_classes" expression => usemodule("raise_class", "");
 }
 
 body common control {

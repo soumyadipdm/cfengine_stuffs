@@ -20,11 +20,18 @@ bundle agent my_package {
                                     "perl-Test-Simple",
                                     "perl-libwww-perl",
                                     };
-      "tools" slist => { "bind-utils", "htop", "telnet", "nc" };
+      "tools_and_libs" slist => {
+                                "bind-utils",
+                                "htop",
+                                "telnet",
+                                "nc",
+                                "python-ldap",
+                                "python-argparse",
+                                };
 
   packages:
-    linux.generic_host::
-      "$(tools)"
+    linux::
+      "$(tools_and_libs)"
         package_method => generic,
         package_policy => "add";
 

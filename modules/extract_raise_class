@@ -1,0 +1,9 @@
+#!/bin/bash
+
+## This module is used to make use of query-enc.py
+## amd write to /etc/roles_classes
+
+roles_file="/etc/roles_classes"
+
+/usr/bin/python /var/cfengine/modules/query-enc.py reverse:$( /bin/hostname -f ) | /bin/sed 's/^/+/g' >${roles_file}
+/bin/chmod aug+r ${roles_file}

@@ -1,23 +1,29 @@
 bundle agent my_ntp {
   vars:
-    linux::
+    any::
       "ntp_conf_file" string => "/etc/ntp.conf";
 
-    centos.cfe_mps::
+    cfe_mps::
       "ntp_servers" slist => { "0.in.pool.ntp.org", "0.asia.pool.ntp.org", "0.asia.pool.ntp.org" };
 
-    centos.cfe_mps::
+    cfe_mps::
       "interface" string => "0.0.0.0";
 
-    centos.!cfe_mps::
+    any.!cfe_mps::
       "ntp_servers" slist => { "app01.local.net" };
 
-    centos.!cfe_mps::
+    any.!cfe_mps::
       "interface" string => "127.0.0.1";
 
-    centos::
+    any::
       "ntp_packages" slist => { "ntp", "ntpdate" };
       "timezone[ZONE]" string => "Asia/Kolkata";
+
+    centos::
+      "service_cmd" string => "/sbin/service";
+
+    freebsd::
+      "service_cmd" string => "/usr/sbin/service";
 
   files:
     any::
@@ -25,13 +31,13 @@ bundle agent my_ntp {
         create => "true",
         perms => mog("0755", "root", "root");
 
-    centos::
+    any::
       "/etc/cfe.d/ntp_conf.mustache"
         perms => mog("0644", "root", "root"),
         copy_from => local_dcp("/var/cfengine/inputs/config_files_repo/ntp_conf.mustache"),
         classes => if_repaired("ntp_conf_template_changed");
 
-    centos|ntp_conf_template_changed::
+    any|ntp_conf_template_changed::
       "/etc/cfe.d/ntp.conf.stg"
         create => "true",
         edit_defaults => empty,
@@ -39,19 +45,19 @@ bundle agent my_ntp {
         template_method => "mustache",
         classes => if_repaired("ntp_conf_template_expanded");
 
-    centos::
+    any::
       "/etc/ntp.conf"
         perms => mog("0644", "root", "root"),
         copy_from => no_backup_dcp("/etc/cfe.d/ntp.conf.stg"),
         classes => if_repaired("ntp_conf_changed");
 
-    centos::
+    any::
       "/etc/sysconfig/clock"
         perms => mog("0644", "root", "root"),
         create => "true",
         edit_line => set_quoted_values("timezone");
 
-    centos::
+    any::
       "/etc/localtime"
         link_from => ln_s("/usr/share/zoneinfo/Asia/Kolkata"),
         move_obstructions => "true";
@@ -63,7 +69,7 @@ bundle agent my_ntp {
         package_policy => "add";
 
   processes:
-    centos::
+    any::
       "ntpd" restart_class => "restart_ntpd";
 
   services:
@@ -73,8 +79,8 @@ bundle agent my_ntp {
         classes => if_repaired("ntpd_restarted");
 
   commands:
-    centos.(restart_ntpd|ntp_conf_changed)::
-      "/sbin/service ntpd restart" classes => if_repaired("ntpd_restarted");
+    any.(restart_ntpd|ntp_conf_changed)::
+      "$(service_cmd) ntpd restart" classes => if_repaired("ntpd_restarted");
 
   reports:
     ntpd_restarted::
