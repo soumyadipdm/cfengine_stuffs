@@ -6,6 +6,7 @@
 
 bundle common custom_policy {
   vars:
+      "custom_bundle_inputs[my_manage_mps]" string => "my_custom_promises/my_manage_mps.cf";
       "custom_bundle_inputs[my_autofs]" string => "my_custom_promises/my_autofs.cf";
       "custom_bundle_inputs[my_dns]" string => "my_custom_promises/my_dns.cf";
       "custom_bundle_inputs[my_user]" string => "my_custom_promises/my_user.cf";
@@ -29,8 +30,9 @@ bundle common custom_policy {
   classes:
     any::
       "extract_roles_classes" 
-        expression => usemodule("extract_raise_class", ""),
-        action => if_elapsed("30");
+        expression => usemodule("extract_raise_class", "");
+        # normally this should be enabled to avoid costly module execution
+        #action => if_elapsed("30");
 
     any::
       "define_roles_classes" expression => usemodule("raise_class", "");

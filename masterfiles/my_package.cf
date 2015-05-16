@@ -27,6 +27,7 @@ bundle agent my_package {
                                 "nc",
                                 "python-ldap",
                                 "python-argparse",
+                                "sg3_utils",
                                 };
 
   packages:

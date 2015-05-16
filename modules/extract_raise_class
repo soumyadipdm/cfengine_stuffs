@@ -4,6 +4,30 @@
 ## amd write to /etc/roles_classes
 
 roles_file="/etc/roles_classes"
+temp_file="/etc/cfe.d/roles_classes.tmp"
+/usr/bin/python /var/cfengine/modules/query-enc.py --file "${temp_file}" reverse:$( /bin/hostname -f ) 2>/dev/null 
 
-/usr/bin/python /var/cfengine/modules/query-enc.py reverse:$( /bin/hostname -f ) | /bin/sed 's/^/+/g' >${roles_file}
-/bin/chmod aug+r ${roles_file}
+## We are not able to successfully query enc/ldap
+## exit out, thus keeping the old roles_file, so
+## CFEngine can still operate as expected
+
+if [[ $? != 0 ]]; then
+    echo "+error_in_querying_enc"
+    exit 1
+fi
+
+## Back-up previous roles_file
+/bin/rm -f ${roles_file}.prev
+/bin/mv ${roles_file} ${roles_file}.prev
+
+## now write easily parsable CFE classes
+/bin/cat ${temp_file} | /bin/sed -e 's/[^a-zA-Z0-9_]/_/g' -e 's/^/+/g' >${roles_file}
+
+## every host has to assume generic_host role
+/bin/grep generic_host ${roles_file} >/dev/null 2>&1
+
+if [[ $? != 0 ]]; then
+    echo "+generic_host" >>${roles_file}
+fi
+
+/bin/chmod aug+r ${roles_file} ${roles_file}.prev

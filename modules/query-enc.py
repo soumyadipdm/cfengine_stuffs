@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import ldap
 import argparse
 
@@ -60,8 +61,7 @@ class LdapEnc:
                             self._search_me(entry, memberof, depth)
 
                             if entryname != 'dummy-member-ignore':
-                                if hosts_only:
-                                    if self.groups_ou in entry:
+                                if hosts_only and self.groups_ou in entry:
                                         continue
 
                                 self.result_arr.append(entryname)
@@ -70,6 +70,7 @@ class LdapEnc:
     def search(self, search_string):
         domain = self.basedn.replace("dc=", "").replace(",", ".")
 
+        # memoberOf search
         if search_string.startswith("reverse:"):
             tmp_search_string = search_string.split("reverse:")[1]
 
@@ -81,6 +82,7 @@ class LdapEnc:
                 search_dn = "cn={0},{1}".format(tmp_search_string, self.groups_ou)
                 self._search_me(search_dn, memberof=True, depth=self.depth)
 
+        # member search, but filter only to hosts
         elif search_string.startswith("hosts:"):
             tmp_search_string = search_string.split("hosts:")[1]
 
@@ -88,6 +90,16 @@ class LdapEnc:
                 search_dn = "cn={0},{1}".format(tmp_search_string, self.groups_ou)
                 self._search_me(search_dn, memberof=False, depth=self.depth, hosts_only=True)
 
+            else:
+                raise LdapEncException("hosts_search_is_applied_only_to_group")
+
+        elif domain in search_string:
+            # if forward lookup is doen on a host, it should throw exception
+            raise LdapEncException("hosts_cannot_be_expanded")
+            #search_dn = "cn={0},{1}".format(search_string, self.hosts_ou)
+            #self._search_me(search_dn, memberof=False, depth=self.depth)
+
+        # member search on a group
         else:
             search_dn = "cn={0},{1}".format(search_string, self.groups_ou)
             self._search_me(search_dn, memberof=False, depth=self.depth)
@@ -99,7 +111,8 @@ class LdapEnc:
 ## --- Main --- ##
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--depth", type=int, default=123456789, help="depth of search e.g: 3, default: infinite")
+    parser.add_argument("--depth", "-d", type=int, default=123456789, help="depth of search e.g: 3, default: infinite")
+    parser.add_argument("--file", "-f", help="write the result to a file")
     parser.add_argument("enc_query", help="query string e.g: reverse:host_name_fqdn (gives all groups that the host is a member of or hosts:group_name (gives all hosts that are in the group)")
     args = parser.parse_args()
 
@@ -107,11 +120,17 @@ def main():
         lr = LdapEnc(args.depth, "192.168.56.201", "dc=local,dc=net", "cn=Manager", "asd@123")
         result_arr = lr.search(args.enc_query)
 
+    except LdapEncException as e:
+        print >> sys.stderr, e
+        sys.exit(1)
+
+    if args.file:
+        with open(args.file, "w") as enc_file:
+            for result in result_arr:
+                enc_file.write(result+"\n")
+    else:
         for result in result_arr:
             print result
-
-    except LdapEncException as e:
-        print e
 
 
 if __name__ == '__main__':

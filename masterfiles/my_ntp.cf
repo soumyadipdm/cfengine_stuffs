@@ -5,15 +5,11 @@ bundle agent my_ntp {
 
     cfe_mps::
       "ntp_servers" slist => { "0.in.pool.ntp.org", "0.asia.pool.ntp.org", "0.asia.pool.ntp.org" };
-
-    cfe_mps::
-      "interface" string => "0.0.0.0";
+      "restrict" string => "restrict 192.168.56.0 mask 255.255.255.0 nomodify notrap nopeer";
 
     any.!cfe_mps::
       "ntp_servers" slist => { "app01.local.net" };
-
-    any.!cfe_mps::
-      "interface" string => "127.0.0.1";
+      "restrict" string => "";
 
     any::
       "ntp_packages" slist => { "ntp", "ntpdate" };

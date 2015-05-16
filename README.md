@@ -1,6 +1,14 @@
 # cfengine_stuffs
 Random CFEngine test promises written for my home lab
 
+Added an OpenLDAP based External Node Classification module. Take a look at promise.cf to know how I raise classes based on node's roles.
+
+__extract_raise_classes__ => uses query-enc.py to query LDAP server for roles of the host node. (To be run once in 25-30 mins, due to it's being costly in execution), it then writes to /etc/cfe.d/roles_classes with classes following CFEngine's module protocol. At any time, if it fails to query LDAP, the old /etc/roles_classes is kept as it is.
+
+__raise_classes__ => It just cat's /etc/roles_classes. This is done during every cf-agent run of course.
+
+
+
 ## Contents
 1. *my_autofs.cf*     => Policy for autofs, used for auto mounting of user home dir
 2. *my_dns.cf*        => Policy to configure master name server using bind
