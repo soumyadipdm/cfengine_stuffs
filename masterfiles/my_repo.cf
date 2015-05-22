@@ -6,10 +6,25 @@ bundle agent my_repo {
     (centos_6|rhel_6).!(cfe_mps|ubuntu_desktop)::
       "/etc/yum.repos.d/$(repofiles)"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_6/$(repofiles)");
+        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_6/$(repofiles)"),
+        classes => if_repaired("repo_modified");
 
     (centos_7|rhel_7).!(cfe_mps|ubuntu_desktop)::
       "/etc/yum.repos.d/$(repofiles)"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_7/$(repofiles)");
+        copy_from => no_backup_dcp("/var/cfengine/inputs/config_files_repo/rhel_7/$(repofiles)"),
+        classes => if_repaired("repo_modified");
+
+  commands:
+    repo_modified::
+      "/usr/bin/yum clean all"
+        contain => silent,
+        classes => if_repaired("yum_cleaned");
+
+  reports:
+    repo_modified::
+      "cf3: yum repo is modified, yum clean is in progress";
+
+    yum_cleaned::
+      "cf3: yum clean successfully executed";
 }

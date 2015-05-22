@@ -2,11 +2,15 @@ bundle agent my_user {
   vars:
     any::
       "users" slist => { "unixuser" };
-    any.!freebsd::
+    linux::
       "password[unixuser]"
         string =>
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
 
+    any::
+      "sshkey[unixuser]"
+        string => "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixuser@app01.local.net";
+      
     freebsd::
       "password[unixuser]"
         string =>
@@ -70,10 +74,23 @@ bundle agent my_user {
         classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
     generic_host::
-      "$(homedir)$(users)/.bashrc"
-        create => "true",
-        perms => mog("0740", "$(users)", "$(users)"),
+      "/etc/skel/.bashrc"
         edit_line => insert_lines("$(PS1_prompt)");
+
+    generic_host::
+      "$(homedir)$(users)"
+        perms => mog("0740", "$(users)", "$(users)"),
+        copy_from => local_dcp("/etc/skel/.");
+
+    any::
+      "$(homedir)$(users)/.ssh/."
+        perms => mog("0700", "$(users)", "$(users)");
+
+    any::
+      "$(homedir)$(users)/.ssh/authorized_keys"
+        create => "true",
+        perms => mog("0600", "$(users)", "$(users)"),
+        edit_line => append_if_no_line("$(sshkey[$(users)])");
 
   commands:
     freebsd.generic_host::

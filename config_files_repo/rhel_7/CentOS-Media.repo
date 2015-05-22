@@ -11,10 +11,17 @@
 #
 #  yum --disablerepo=\* --enablerepo=c6-media [command]
  
-[c6-media]
-name=CentOS-$releasever - Media
+[base]
+name=CentOS-$releasever - Base
 
-baseurl=http://192.168.56.201/cobbler/ks_mirror/centos7-x86_64/
+baseurl=http://192.168.56.201/cobbler/ks_mirror/CentOS7.1-x86_64/
 gpgcheck=0
 enabled=1
 #gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+
+[extras]
+name=CentOS 7 Extras
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
+#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+gpgcheck=0
+enabled=1

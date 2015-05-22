@@ -7,7 +7,7 @@
 bundle common custom_policy {
   vars:
       "custom_bundle_inputs[my_manage_mps]" string => "my_custom_promises/my_manage_mps.cf";
-      "custom_bundle_inputs[my_autofs]" string => "my_custom_promises/my_autofs.cf";
+      #"custom_bundle_inputs[my_autofs]" string => "my_custom_promises/my_autofs.cf";
       "custom_bundle_inputs[my_dns]" string => "my_custom_promises/my_dns.cf";
       "custom_bundle_inputs[my_user]" string => "my_custom_promises/my_user.cf";
       "custom_bundle_inputs[my_motd]" string => "my_custom_promises/my_motd.cf";
@@ -23,6 +23,7 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_log]" string => "my_custom_promises/my_log.cf";
       "custom_bundle_inputs[my_ntp]" string => "my_custom_promises/my_ntp.cf";
       "custom_bundle_inputs[my_database]" string => "my_custom_promises/my_database.cf";
+      "custom_bundle_inputs[my_docker]" string => "my_custom_promises/my_docker.cf";
 
       "custom_bundles" slist => getindices("custom_bundle_inputs");
       "custom_inputs" slist => getvalues("custom_bundle_inputs");
@@ -36,6 +37,12 @@ bundle common custom_policy {
 
     any::
       "define_roles_classes" expression => usemodule("raise_class", "");
+
+    any.!cfe_mps::
+      # This is to make sure master policy server does not
+      # break down even when external node classification
+      # system is broken like hell
+      "cfe_mps" or => { "am_policy_hub" };
 }
 
 body common control {

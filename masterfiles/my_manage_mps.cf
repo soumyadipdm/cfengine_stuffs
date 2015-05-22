@@ -1,0 +1,32 @@
+bundle agent my_manage_mps {
+  # this bundle manages Master Policy Server
+  # as well as ENC/ldap
+  vars:
+      "enc_process" string => "/export/content/openldap/libexec/slapd";
+      "enc_service_command"
+        string =>
+          "/export/content/openldap/libexec/slapd -u openldap -g openldap -h \"ldap:// ldaps://\"";
+
+  classes:
+    any::
+      "activate_policy" or => { "cfe_mps", "app01_local_net" };
+
+  processes:
+    activate_policy::
+      "$(enc_process)" restart_class => "restart_enc_service";
+
+  commands:
+    activate_policy.restart_enc_service::
+      "$(enc_service_command)" classes => if_else("restart_enc_successful",
+                                                  "restart_enc_unsuccessful");
+
+  reports:
+    activate_policy.restart_enc_service::
+      "cf3: ENC process is not running. Restarting it";
+
+    activate_policy.restart_enc_successful::
+      "cf3: ENC/ldap service is restarted";
+
+    activate_policy.restart_enc_unsuccessful::
+      "cf3: FATAL: ENC/ldap service restart failed";
+}

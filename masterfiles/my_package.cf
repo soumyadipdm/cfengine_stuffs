@@ -28,6 +28,10 @@ bundle agent my_package {
                                 "python-ldap",
                                 "python-argparse",
                                 "sg3_utils",
+                                "curl",
+                                "wget",
+                                "vim",
+                                "bc",
                                 };
 
   packages:

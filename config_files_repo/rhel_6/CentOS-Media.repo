@@ -18,3 +18,10 @@ baseurl=http://192.168.56.201/cobbler/ks_mirror/CentOS6.6/
 gpgcheck=0
 enabled=1
 #gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+
+[extras]
+name=CentOS 7 Extras
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
+#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+gpgcheck=0
+enabled=1
