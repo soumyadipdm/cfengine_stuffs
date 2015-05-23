@@ -1,15 +1,15 @@
- bundle agent my_docker {
-   classes:
-     "deploy_docker" and => { "docker_host", "centos_7" };
+bundle agent my_docker {
+  classes:
+      "deploy_docker" and => { "docker_host", "centos_7" };
 
-   packages:
-     deploy_docker::
-       "docker"
-         package_method => yum_rpm_permissive,
-         package_policy => "add",
-         package_select => "==",
-         package_architectures => { "x86_64" },
-         classes => if_else("docker_install_successful", "docker_install_failed");
+  packages:
+    deploy_docker::
+      "docker"
+        package_method => yum_rpm_permissive,
+        package_policy => "add",
+        package_select => "==",
+        package_architectures => { "x86_64" },
+        classes => if_else("docker_install_successful", "docker_install_failed");
 
   reports:
     deploy_docker.docker_install_successful::
@@ -17,4 +17,4 @@
 
     deploy_docker.docker_install_failed::
       "cf3: docker installation failed";
- }
+}

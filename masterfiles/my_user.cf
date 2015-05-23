@@ -9,8 +9,9 @@ bundle agent my_user {
 
     any::
       "sshkey[unixuser]"
-        string => "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixuser@app01.local.net";
-      
+        string =>
+          "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixuser@app01.local.net";
+
     freebsd::
       "password[unixuser]"
         string =>
@@ -18,6 +19,9 @@ bundle agent my_user {
 
     any::
       "privileged_users" slist => { "unixuser" };
+
+    any::
+      # my sweet PS1 prompt
       "PS1_prompt"
         string =>
           "export PS1=\"\[\e[00;31m\]{\[\e[0m\]\[\e[00;36m\]\u\[\e[0m\]\[\e[00;33m\]@\[\e[0m\]\[\e[00;36m\]\h\[\e[0m\]\[\e[00;31m\]}\[\e[0m\]\[\e[00;34m\][\[\e[0m\]\[\e[00;32m\]\W\[\e[0m\]\[\e[00;37m\]|\[\e[0m\]\[\e[00;32m\]\A\[\e[0m\]\[\e[00;34m\]]\[\e[0m\]\[\e[00;31m\]->\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\"";
@@ -41,6 +45,10 @@ bundle agent my_user {
 
     freebsd::
       "sudoers_dir" string => "/usr/local/etc/sudoers.d";
+
+    any::
+      # /etc/skel files that probably we care for
+      "skel_files" slist => { ".bash_logout", ".bash_profile", ".bashrc" };
 
   users:
     # sadly users promise is not supported on FreeBSD
@@ -73,17 +81,17 @@ bundle agent my_user {
         edit_line => insert_user("$(privileged_users)"),
         classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
-    generic_host::
-      "/etc/skel/.bashrc"
-        edit_line => insert_lines("$(PS1_prompt)");
+    any::
+      "/etc/skel/.bashrc" edit_line => insert_lines("$(PS1_prompt)");
 
-    generic_host::
-      "$(homedir)$(users)"
+    any::
+      "$(homedir)$(users)/$(skel_files)"
         perms => mog("0740", "$(users)", "$(users)"),
-        copy_from => local_dcp("/etc/skel/.");
+        copy_from => no_backup_dcp("/etc/skel/$(skel_files)");
 
     any::
       "$(homedir)$(users)/.ssh/."
+        create => "true",
         perms => mog("0700", "$(users)", "$(users)");
 
     any::

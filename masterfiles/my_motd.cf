@@ -1,23 +1,22 @@
 bundle agent my_motd {
   vars:
       "source" string => "/var/cfengine/inputs/config_files_repo/motd.sh";
-      #"source" string => "/var/cfengine/inputs/config_files_repo/motd.mustache";
-      #"destination" string => "/etc/motd";
+      # "source" string => "/var/cfengine/inputs/config_files_repo/motd.mustache";
+      # "destination" string => "/etc/motd";
       # dynamic motd
       "destination" string => "/etc/profile.d/motd.sh";
 
   files:
     linux.generic_host::
-      "/etc/motd"
-        delete => tidy;
+      "/etc/motd" delete => tidy;
 
     linux.generic_host::
       "$(destination)"
-        #create => "true",
+        # create => "true",
         perms => mog("644", "root", "root"),
         copy_from => no_backup_dcp("$(source)");
-        #edit_defaults => empty,
-        #action => if_elapsed("60"),
-        #edit_template => "$(source)",
-        #template_method => "mustache";
+      # edit_defaults => empty,
+      # action => if_elapsed("60"),
+      # edit_template => "$(source)",
+      # template_method => "mustache";
 }
