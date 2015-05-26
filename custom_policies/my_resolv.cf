@@ -1,0 +1,21 @@
+bundle agent my_resolv {
+  vars: 
+    "dns_resolver" string => "$(my_definitions.infra_server[app01.local.net])";
+
+  files:
+    generic_host.linux.!cfe_mps::
+      "$(my_definitions.cfe_staging_dir)/resolv.conf.mustache"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/resolv.conf.mustache");
+
+      "$(my_definitions.cfe_staging_dir)/resolv.conf.stg"
+        create => "true",
+        perms => mog("0644", "root", "root"),
+        edit_defaults => empty,
+        edit_template => "$(my_definitions.cfe_staging_dir)/resolv.conf.mustache",
+        template_method => "mustache";
+
+      "/etc/resolv.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.cfe_staging_dir)/resolv.conf.stg");
+}

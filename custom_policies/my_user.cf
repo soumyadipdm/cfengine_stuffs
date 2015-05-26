@@ -62,7 +62,7 @@ bundle agent my_user {
         classes => if_repaired("$(users)_created");
 
   files:
-    freebsd.generic_host::
+    generic_host::
       "/home/$(users)/."
         create => "true",
         perms => mog("0750", "$(users)", "$(users)");

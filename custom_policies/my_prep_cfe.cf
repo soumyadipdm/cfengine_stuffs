@@ -1,0 +1,7 @@
+bundle agent my_prep_cfe {
+  files:
+    any::
+      "$(my_definitions.cfe_staging_dir)/."
+        create => "true",
+        perms => mog("0755", "root", "root");
+}

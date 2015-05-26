@@ -1,0 +1,52 @@
+bundle agent my_repo {
+  vars:
+      "repofiles" slist => { "CentOS-Media.repo", "epel.repo", "cfengine.repo" };
+      "reposerver" string => "$(my_definitions.infra_server[app01.local.net])";
+
+    centos_6::
+      "base_repo_dir" string => "CentOS6.6";
+      "rhel_version" string => "6";
+      "cfe_repo_dir" string => "cfengine";
+
+    centos_7::
+      "base_repo_dir" string => "CentOS7.1-x86_64";
+      "rhel_version" string => "7";
+      "cfe_repo_dir" string => "cfengine-el7";
+
+  files:
+    any::
+      "$(my_definitions.cfe_staging_dir)/yum_repo/."
+        create => "true",
+        perms => mog("0755", "root", "root");
+
+    centos.!cfe_mps::
+      "$(my_definitions.cfe_staging_dir)/yum_repo/$(repofiles).mustache"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/yum_repo/$(repofiles).mustache"),
+        classes => if_repaired("$(repofiles)_mustache_changed");
+
+      "$(my_definitions.cfe_staging_dir)/yum_repo/$(repofiles).stg"
+        create => "true",
+        perms => mog("0644", "root", "root"),
+        edit_defaults => empty,
+        edit_template => "$(my_definitions.cfe_staging_dir)/yum_repo/$(repofiles).mustache",
+        template_method => "mustache";
+
+      "/etc/yum.repos.d/$(repofiles)"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.cfe_staging_dir)/yum_repo/$(repofiles).stg"),
+        classes => if_repaired("repo_modified");
+      
+  commands:
+    repo_modified::
+      "/usr/bin/yum clean all"
+        contain => silent,
+        classes => if_repaired("yum_cleaned");
+
+  reports:
+    repo_modified::
+      "cf3: yum repo is modified, yum clean is in progress";
+
+    yum_cleaned::
+      "cf3: yum clean successfully executed";
+}

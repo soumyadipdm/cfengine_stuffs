@@ -7,9 +7,19 @@ bundle agent my_manage_mps {
         string =>
           "/export/content/openldap/libexec/slapd -u openldap -g openldap -h \"ldap:// ldaps://\"";
 
+      "tools" slist => { "fabric" };
+
   classes:
     any::
       "activate_policy" or => { "cfe_mps", "app01_local_net" };
+
+  packages:
+    activate_policy::
+      "$(tools)"
+        package_policy => "add",
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
 
   processes:
     activate_policy::

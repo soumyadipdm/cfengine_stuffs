@@ -2,13 +2,15 @@ bundle agent my_ntp {
   vars:
     any::
       "ntp_conf_file" string => "/etc/ntp.conf";
+      "infra_server_name" string => "$(my_definitions.infra_server[app01.local.net])";
+      "infra_server_ip" slist => getvalues("my_definitions.infra_server");
 
     cfe_mps::
       "ntp_servers" slist => { "0.in.pool.ntp.org", "0.asia.pool.ntp.org", "0.asia.pool.ntp.org" };
       "restrict" string => "restrict 192.168.56.0 mask 255.255.255.0 nomodify notrap nopeer";
 
     any.!cfe_mps::
-      "ntp_servers" slist => { "app01.local.net" };
+      "ntp_servers" slist => { "$(infra_server_name)" };
       "restrict" string => "";
 
     any::
@@ -23,28 +25,23 @@ bundle agent my_ntp {
 
   files:
     any::
-      "/etc/cfe.d/."
-        create => "true",
-        perms => mog("0755", "root", "root");
-
-    any::
-      "/etc/cfe.d/ntp_conf.mustache"
+      "$(my_definitions.cfe_staging_dir)/ntp_conf.mustache"
         perms => mog("0644", "root", "root"),
-        copy_from => local_dcp("/var/cfengine/inputs/config_files_repo/ntp_conf.mustache"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/ntp_conf.mustache"),
         classes => if_repaired("ntp_conf_template_changed");
 
-    any|ntp_conf_template_changed::
-      "/etc/cfe.d/ntp.conf.stg"
+    any::
+      "$(my_definitions.cfe_staging_dir)/ntp.conf.stg"
         create => "true",
         edit_defaults => empty,
-        edit_template => "/etc/cfe.d/ntp_conf.mustache",
+        edit_template => "$(my_definitions.cfe_staging_dir)/ntp_conf.mustache",
         template_method => "mustache",
         classes => if_repaired("ntp_conf_template_expanded");
 
     any::
       "/etc/ntp.conf"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("/etc/cfe.d/ntp.conf.stg"),
+        copy_from => no_backup_dcp("$(my_definitions.cfe_staging_dir)/ntp.conf.stg"),
         classes => if_repaired("ntp_conf_changed");
 
     any::

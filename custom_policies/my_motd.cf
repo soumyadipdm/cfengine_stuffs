@@ -1,7 +1,7 @@
 bundle agent my_motd {
   vars:
-      "source" string => "/var/cfengine/inputs/config_files_repo/motd.sh";
-      # "source" string => "/var/cfengine/inputs/config_files_repo/motd.mustache";
+      "source" string => "$(my_definitions.files_repo_dir)/motd";
+      # "source" string => "$(my_definitions.files_repo_dir)/motd.mustache";
       # "destination" string => "/etc/motd";
       # dynamic motd
       "destination" string => "/etc/profile.d/motd.sh";

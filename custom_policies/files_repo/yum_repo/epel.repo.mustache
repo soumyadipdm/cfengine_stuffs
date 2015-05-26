@@ -1,0 +1,16 @@
+[epel]
+name=Extra Packages for Enterprise Linux {{vars.my_repo.rhel_version}} - $basearch
+baseurl=https://dl.fedoraproject.org/pub/epel/{{vars.my_repo.rhel_version}}/x86_64/
+#mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-{{vars.my_repo.rhel_version}}&arch=$basearch
+#failovermethod=priority
+enabled=1
+gpgcheck=0
+
+
+[epel-testing]
+name=Extra Packages for Enterprise Linux {{vars.my_repo.rhel_version}} - Testing - $basearch
+baseurl=http://download.fedoraproject.org/pub/epel/testing/{{vars.my_repo.rhel_version}}/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=testing-epel{{vars.my_repo.rhel_version}}&arch=$basearch
+failovermethod=priority
+enabled=0
+gpgcheck=0

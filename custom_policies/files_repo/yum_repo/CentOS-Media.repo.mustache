@@ -1,0 +1,13 @@
+[base]
+name=CentOS-$releasever - Base
+
+baseurl=http://{{vars.my_repo.reposerver}}/cobbler/ks_mirror/{{vars.my_repo.base_repo_dir}}/
+gpgcheck=0
+enabled=1
+
+[extras]
+name=CentOS Extras
+mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
+#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+gpgcheck=0
+enabled=1

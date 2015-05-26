@@ -2,8 +2,11 @@ bundle agent my_docker {
   classes:
       "deploy_docker" and => { "docker_host", "centos_7" };
 
-  packages:
     deploy_docker::
+      "docker_already_installed" expression => fileexists("/usr/bin/docker");
+
+  packages:
+    deploy_docker.!docker_already_installed::
       "docker"
         package_method => yum_rpm_permissive,
         package_policy => "add",

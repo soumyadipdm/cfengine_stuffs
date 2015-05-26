@@ -1,0 +1,105 @@
+# CFEngine Boot Strap preparation
+# detect profile
+# if it's CentOS 6.*, we can use /etc/rc.d/rc.local
+# if it's CentOS 7.*, we have to use systemd unit file
+
+#set $prf = $getVar('$profile', None)
+#if 'CentOS6' in $prf
+#raw
+mv /etc/rc.d/rc.local /root/rc.local.bak
+cat >>/etc/rc.d/rc.local <<'EOF'
+#!/bin/bash 
+
+if [[ -f /etc/centos-release ]]; then
+    release=$( egrep -o "release 7|6\." /etc/centos-release )
+else
+    release="None"
+fi
+
+if [[ "${release}" != 'release 6' ]]; then
+    exit 1
+fi
+
+curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine/cfengine-community-3.6.5-1.x86_64.rpm"
+
+rm -f /etc/yum.repos.d/*.repo
+yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+
+if [[ $? == 0 ]]; then
+    touch /root/cfe-installed
+fi
+
+if [[ -f /root/cfe-installed ]]; then
+    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+fi
+
+sleep 2
+
+rm -f /tmp/cfengine.rpm
+mv /root/rc.local.bak /etc/rc.d/rc.local
+chmod 744 /etc/rc.d/rc.local
+EOF
+
+chmod 744 /etc/rc.d/rc.local
+#end raw
+# end of CentOS6.* CFEngine bootstrap
+
+#else if 'CentOS7' in $prf
+# create the bootstrap script
+#raw
+cat >>/root/bootstrap_cfe <<'EOF'
+#!/bin/bash
+
+if [[ -f /etc/centos-release ]]; then
+    release=$( egrep -o "release 7|6\." /etc/centos-release )
+else
+    release="None"
+fi
+
+if [[ "${release}" != 'release 7' ]]; then
+    exit 1
+fi
+
+curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine-el7/cfengine-community-3.6.5-1.el7.x86_64.rpm"
+
+rm -f /etc/yum.repos.d/*.repo
+yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+
+if [[ $? == 0 ]]; then
+    touch /root/cfe-installed
+fi
+
+if [[ -f /root/cfe-installed ]]; then
+    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+fi
+
+sleep 2
+
+rm -f /tmp/cfengine.rpm
+systemctl disable systemd-cfengine-bootstrap.service
+rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
+rm -f /etc/systemd/system/multi-user.target.wants/systemd-cfengine-bootstrap.service
+EOF
+
+chmod 744 /root/bootstrap_cfe
+# end of bootstrap script file
+# now create systemd unit file
+cat >/usr/lib/systemd/system/systemd-cfengine-bootstrap.service <<'EOF'
+[Unit]
+Description=CFEngine Bootstrap
+After=default.target
+
+[Service]
+Type=forking
+ExecStart=/root/bootstrap_cfe
+
+[Install]
+WantedBy=default.target
+EOF
+# now enable the service for next boot
+systemctl enable systemd-cfengine-bootstrap.service 
+#end raw
+
+#else
+# No profile matched for CFEngine bootstrap
+#end if
