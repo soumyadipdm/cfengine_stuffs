@@ -7,7 +7,7 @@ __extract_raise_classes__ => uses query-enc.py to query LDAP server for roles of
 
 __raise_classes__ => It just cat's /etc/roles_classes. This is done during every cf-agent run of course.
 
-
+__Mustache Template__ => my_repo.cf, my_ntp.cf, my_resolv_conf.cf etc. promises make use of the new Mustache Templates. It's awesome and easy!!
 
 ## Contents
 1. *my_autofs.cf*     => Policy for autofs, used for auto mounting of user home dir
