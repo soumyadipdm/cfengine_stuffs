@@ -77,6 +77,8 @@ class LdapEnc:
             if domain in tmp_search_string:
                 search_dn = "cn={0},{1}".format(tmp_search_string, self.hosts_ou)
                 self._search_me(search_dn, memberof=True, depth=self.depth)
+                if not len(self.result_arr):
+                    self.result_arr.append("generic_host")
 
             else:
                 search_dn = "cn={0},{1}".format(tmp_search_string, self.groups_ou)

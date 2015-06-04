@@ -11,6 +11,15 @@ bundle agent my_services {
       "^.*mysqld\s+.*$" restart_class => "restart_mysql";
 
   services:
+    centos::
+      "kdump" service_policy => "stop";
+
+    centos_6::
+      "iptables" service_policy => "stop";
+
+    centos_7::
+      "firewalld" service_policy => "stop";
+
     mysql_server.restart_mysql::
       "mysqld"
         service_policy => "start",

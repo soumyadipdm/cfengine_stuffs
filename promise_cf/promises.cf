@@ -24,14 +24,15 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_repo]" string => "$(custom_policies_dir)/my_repo.cf";
       "custom_bundle_inputs[my_freespace]" string => "$(custom_policies_dir)/my_freespace.cf";
       "custom_bundle_inputs[my_services]" string => "$(custom_policies_dir)/my_services.cf";
-      "custom_bundle_inputs[my_test]" string => "$(custom_policies_dir)/my_test.cf";
-      "custom_bundle_inputs[my_env]" string => "$(custom_policies_dir)/my_env.cf";
+      # "custom_bundle_inputs[my_test]" string => "$(custom_policies_dir)/my_test.cf";
+      # "custom_bundle_inputs[my_env]" string => "$(custom_policies_dir)/my_env.cf";
       "custom_bundle_inputs[my_update_cfe]" string => "$(custom_policies_dir)/my_update_cfe.cf";
       "custom_bundle_inputs[my_resolv]" string => "$(custom_policies_dir)/my_resolv.cf";
       "custom_bundle_inputs[my_log]" string => "$(custom_policies_dir)/my_log.cf";
       "custom_bundle_inputs[my_ntp]" string => "$(custom_policies_dir)/my_ntp.cf";
-      "custom_bundle_inputs[my_database]" string => "$(custom_policies_dir)/my_database.cf";
+      #"custom_bundle_inputs[my_database]" string => "$(custom_policies_dir)/my_database.cf";
       "custom_bundle_inputs[my_docker]" string => "$(custom_policies_dir)/my_docker.cf";
+      "custom_bundle_inputs[my_monitoring]" string => "$(custom_policies_dir)/my_monitoring.cf";
 
       ## DO NOT ADD STUFFS IN custom_bundle_inputs ARRAY AFTER THIS LINE
 

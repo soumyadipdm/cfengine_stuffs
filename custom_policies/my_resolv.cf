@@ -1,6 +1,6 @@
 bundle agent my_resolv {
-  vars: 
-    "dns_resolver" string => "$(my_definitions.infra_server[app01.local.net])";
+  vars:
+      "dns_resolver" string => "$(my_definitions.infra_server[app01.local.net])";
 
   files:
     generic_host.linux.!cfe_mps::

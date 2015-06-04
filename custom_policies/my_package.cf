@@ -1,25 +1,5 @@
 bundle agent my_package {
   vars:
-      "range_dependencies" slist => {
-                                    "perl-ExtUtils-MakeMaker",
-                                    "perl-ExtUtils-Embed",
-                                    "pcre",
-                                    "pcre-devel",
-                                    "zlib",
-                                    "zlib-devel",
-                                    "make",
-                                    "flex",
-                                    "bison",
-                                    "libyaml",
-                                    "libyaml-devel",
-                                    "sqlite-devel",
-                                    "automake",
-                                    "libtool",
-                                    "apr-util-devel",
-                                    "httpd-devel",
-                                    "perl-Test-Simple",
-                                    "perl-libwww-perl",
-                                    };
       "tools_and_libs" slist => {
                                 "bind-utils",
                                 "htop",
@@ -32,6 +12,15 @@ bundle agent my_package {
                                 "wget",
                                 "vim",
                                 "bc",
+                                "net-tools",
+                                "lsof",
+                                "sysstat",
+                                "iotop",
+                                "nmap",
+                                "nmon",
+                                "tcpdump",
+                                "nc",
+                                "nmap-ncat",
                                 };
 
   packages:
@@ -56,8 +45,4 @@ bundle agent my_package {
         package_version => "1.5.3-2.el6",
         package_architectures => { "x86_64" };
 
-    app01_local_net::
-      "$(range_dependencies)"
-        package_method => generic,
-        package_policy => "add";
 }

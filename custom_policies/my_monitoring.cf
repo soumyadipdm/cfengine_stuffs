@@ -1,0 +1,70 @@
+bundle agent my_monitoring {
+  vars:
+      "zabbix_server" string => "$(my_definitions.infra_server[app01.local.net])";
+
+      "hostname" string => "$(sys.fqhost)";
+    centos_6::
+      "zabbix_agent_restart_cmd" string => "/sbin/service zabbix-agent restart";
+    centos_7::
+      "zabbix_agent_restart_cmd" string => "/bin/systemctl restart zabbix-agent.service";
+
+  files:
+    centos::
+      "$(my_definitions.cfe_staging_dir)/monitoring/."
+        create => "true",
+        perms => mog("0755", "root", "root");
+
+      "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.mustache"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/zabbix_agentd.conf.mustache");
+
+      "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.stg"
+        create => "true",
+        perms => mog("0644", "root", "root"),
+        edit_defaults => empty,
+        edit_template => "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.mustache",
+        template_method => "mustache";
+
+      "/etc/zabbix/zabbix_agentd.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from =>
+          no_backup_dcp("$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.stg"),
+        classes => if_repaired("zabbix_agentd_conf_changed");
+
+      "/etc/zabbix/zabbix_agentd.default"
+        create => "true",
+        link_from => ln_s("/etc/zabbix/zabbix_agentd.conf"),
+        move_obstructions => "true";
+
+  packages:
+    centos::
+      "zabbix-agent"
+        package_policy => "add",
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
+
+  processes:
+    centos::
+      "zabbix_agentd" restart_class => "restart_zabbix_agent";
+
+  services:
+    centos.restart_zabbix_agent::
+      "zabbix-agent"
+        service_policy => "start",
+        classes => if_repaired("zabbix_agent_started");
+
+  commands:
+    centos.(restart_zabbix_agent|zabbix_agentd_conf_changed)::
+      "$(zabbix_agent_restart_cmd)"
+        contain => silent,
+        classes => if_repaired("zabbix_agent_started");
+
+  reports:
+    zabbix_agentd_conf_changed::
+      "cf3: /etc/zabbix/zabbix_agentd.conf has changed";
+    restart_zabbix_agent::
+      "cf3: zabbix agent is not running";
+    zabbix_agent_started::
+      "cf3: zabbix agent started";
+}

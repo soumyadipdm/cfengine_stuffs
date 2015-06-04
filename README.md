@@ -26,3 +26,6 @@ __raise_classes__ => It just cat's /etc/roles_classes. This is done during every
 14. *my_ntp.cf*       => Configures ntpd and timezone, uses mustache template to produce the ntp.conf file
 15. *my_database.cf*  => Installs mysql-server and creates a sample DB and Table
 16. *my_motd.cf*      => Creates /etc/motd from a mustache template with verbose host information
+17. *my_monitoring.cf*      => Zabbix monitoring agent configuration
+18. *my_docker.cf*      => Docker configuration policy
+19. *my_managee_mps.cf*      => Manages master policy server, right now it installs and configures OpenLDAP based External Node Classifier system
