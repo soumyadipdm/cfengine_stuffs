@@ -21,6 +21,7 @@ bundle agent my_package {
                                 "tcpdump",
                                 "nc",
                                 "nmap-ncat",
+                                "python-psutil",
                                 };
 
   packages:
@@ -44,5 +45,4 @@ bundle agent my_package {
         package_select => "==",
         package_version => "1.5.3-2.el6",
         package_architectures => { "x86_64" };
-
 }

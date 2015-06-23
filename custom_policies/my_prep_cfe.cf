@@ -1,7 +1,31 @@
 bundle agent my_prep_cfe {
+  vars:
+      "add_root_crontab_for_cfe"
+        slist =>
+          {
+          "15 * * * * /usr/bin/python /var/cfengine/modules/revive_cfengine.py 192.168.56.201",
+          };
+
   files:
     any::
       "$(my_definitions.cfe_staging_dir)/."
         create => "true",
         perms => mog("0755", "root", "root");
+
+    # there's no point in running cf-serverd in clients
+    centos.!cfe_mps::
+      "/etc/sysconfig/cfengine3"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cfengine3");
+
+    centos::
+      "/var/spool/cron/root"
+        comment => "revive cfengine if it's dead",
+        create => "true",
+        perms => mog("0600", "root", "root"),
+        edit_line => append_if_no_line("$(add_root_crontab_for_cfe)");
+
+  reports:
+    any::
+      "cf3: CFEngine is taking care of this host, nice & easy!";
 }

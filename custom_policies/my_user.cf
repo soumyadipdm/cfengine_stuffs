@@ -20,12 +20,6 @@ bundle agent my_user {
     any::
       "privileged_users" slist => { "unixuser" };
 
-    any::
-      # my sweet PS1 prompt
-      "PS1_prompt"
-        string =>
-          "export PS1=\"\[\e[00;31m\]{\[\e[0m\]\[\e[00;36m\]\u\[\e[0m\]\[\e[00;33m\]@\[\e[0m\]\[\e[00;36m\]\h\[\e[0m\]\[\e[00;31m\]}\[\e[0m\]\[\e[00;34m\][\[\e[0m\]\[\e[00;32m\]\W\[\e[0m\]\[\e[00;37m\]|\[\e[0m\]\[\e[00;32m\]\A\[\e[0m\]\[\e[00;34m\]]\[\e[0m\]\[\e[00;31m\]->\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\"";
-
     linux|freebsd::
       "homedir"
         string => "/home/",
@@ -82,7 +76,9 @@ bundle agent my_user {
         classes => if_repaired("$(privileged_users)_sudoers_repaired");
 
     any::
-      "/etc/skel/.bashrc" edit_line => insert_lines("$(PS1_prompt)");
+      "/etc/skel/.bashrc"
+        perms => mog("0744", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/bashrc");
 
     any::
       "$(homedir)$(users)/$(skel_files)"

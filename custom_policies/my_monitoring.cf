@@ -36,6 +36,12 @@ bundle agent my_monitoring {
         link_from => ln_s("/etc/zabbix/zabbix_agentd.conf"),
         move_obstructions => "true";
 
+      "/etc/zabbix/zabbix_agentd.d/userparameter_cfengine.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from =>
+          no_backup_dcp("$(my_definitions.files_repo_dir)/zabbix_userparameter_cfengine.conf"),
+        classes => if_repaired("zabbix_agentd_conf_changed");
+
   packages:
     centos::
       "zabbix-agent"
