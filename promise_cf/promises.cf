@@ -59,7 +59,7 @@ bundle common custom_policy {
 bundle common my_definitions {
   vars:
     any::
-      "infra_server[app01.local.net]" string => "192.168.56.201";
+      "infra_server[infra01.local.net]" string => "192.168.56.101";
       "inputs_dir" string => "$(sys.workdir)/inputs";
       "custom_policies_dir" string => "$(inputs_dir)/custom_policies";
       "files_repo_dir" string => "$(custom_policies_dir)/files_repo";

@@ -19,7 +19,7 @@ bundle agent my_repo {
         create => "true",
         perms => mog("0755", "root", "root");
 
-    centos.!cfe_mps::
+    centos::
       "$(my_definitions.cfe_staging_dir)/yum_repo/$(repofiles).mustache"
         perms => mog("0644", "root", "root"),
         copy_from => local_dcp("$(my_definitions.files_repo_dir)/yum_repo/$(repofiles).mustache"),
