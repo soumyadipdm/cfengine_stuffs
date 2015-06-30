@@ -3,10 +3,14 @@
 # This script is in root's crontab
 # It copies from git repo to /var/cfengine/masterfiles
 # root's crontab entry:
-# */1 * * * * /home/git/custom_promises.stg/custom_promises/git_repo2masterfiles.sh
+# */1 * * * * /var/cfengine/modules/git_repo2masterfiles.sh
 
-git_staging_dir="/home/git/custom_promises.stg"
+git_staging_dir="/mnt/data/cfe-git/cfengine_stuffs"
 cfe_masterfiles_dir="/var/cfengine/masterfiles"
+
+#pull fresh updates from repo
+cd ${git_staging_dir}
+/usr/bin/git pull
 
 /usr/bin/rsync -av --no-p --delete ${git_staging_dir}/custom_promises/custom_policies/ ${cfe_masterfiles_dir}/custom_policies/
 
