@@ -1,6 +1,6 @@
 bundle agent my_monitoring {
   vars:
-      "zabbix_server" string => "$(my_definitions.infra_server[app01.local.net])";
+      "zabbix_server" string => "$(my_definitions.infra_server[infra01.local.net])";
 
       "hostname" string => "$(sys.fqhost)";
     centos_6::

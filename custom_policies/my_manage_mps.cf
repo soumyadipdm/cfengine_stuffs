@@ -11,7 +11,7 @@ bundle agent my_manage_mps {
 
   classes:
     any::
-      "activate_policy" or => { "cfe_mps", "app01_local_net" };
+      "activate_policy" or => { "cfe_mps", "infra01_local_net" };
 
   packages:
     activate_policy::
