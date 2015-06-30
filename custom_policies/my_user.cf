@@ -56,7 +56,7 @@ bundle agent my_user {
         classes => if_repaired("$(users)_created");
 
   files:
-    generic_host::
+    any::
       "/home/$(users)/."
         create => "true",
         perms => mog("0750", "$(users)", "$(users)");
@@ -67,7 +67,7 @@ bundle agent my_user {
         edit_line => append_if_no_line("$(pwline[$(users)])"),
         classes => if_repaired("$(users)_created");
 
-    generic_host::
+    any::
       "$(sudoers_dir)/$(privileged_users)"
         perms => mog("0440", "root", "root"),
         create => "true",
@@ -95,6 +95,11 @@ bundle agent my_user {
         create => "true",
         perms => mog("0600", "$(users)", "$(users)"),
         edit_line => append_if_no_line("$(sshkey[$(users)])");
+
+    any::
+      "/etc/dir_colors"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/my_user/dir_colors");
 
   commands:
     freebsd.generic_host::
