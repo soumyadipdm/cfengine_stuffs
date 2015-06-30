@@ -12,7 +12,7 @@ cfe_masterfiles_dir="/var/cfengine/masterfiles"
 cd ${git_staging_dir}
 /usr/bin/git pull
 
-/usr/bin/rsync -av --no-p --delete ${git_staging_dir}/custom_promises/ ${cfe_masterfiles_dir}/custom_policies/
+/usr/bin/rsync -av --no-p --delete ${git_staging_dir}/custom_policies/ ${cfe_masterfiles_dir}/custom_policies/
 
 /usr/bin/rsync --no-p ${git_staging_dir}/promise_cf/promises.cf ${cfe_masterfiles_dir}/promises.cf
 
