@@ -1,24 +1,24 @@
 bundle agent my_user {
   vars:
     any::
-      "users" slist => { "unixuser" };
+      "users" slist => { "unixguy" };
     linux::
-      "password[unixuser]"
+      "password[unixguy]"
         string =>
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
 
     any::
-      "sshkey[unixuser]"
+      "sshkey[unixguy]"
         string =>
-          "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixuser@app01.local.net";
+          "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixguy@app01.local.net";
 
     freebsd::
-      "password[unixuser]"
+      "password[unixguy]"
         string =>
           "$6$CUubOkVF5q2s.eOd$ZhfXZrK8nGtehCJNuqES5Omv.mN.o6Iy7kLvwFeCcq3WYguztyeW4PhSBhVSOSVOSgV.lV2GFH.9q557oaYfx0";
 
     any::
-      "privileged_users" slist => { "unixuser" };
+      "privileged_users" slist => { "unixguy" };
 
     linux|freebsd::
       "homedir"
@@ -31,8 +31,8 @@ bundle agent my_user {
         policy => "free";
 
     freebsd::
-      "pwline[unixuser]"
-        string => "unixuser:$(password[unixuser]):1001:1001::0:0:User &:/home/unixuser:/bin/bash";
+      "pwline[unixguy]"
+        string => "unixguy:$(password[unixguy]):10000:10000::0:0:User &:/home/unixguy:/bin/bash";
 
     centos|solaris::
       "sudoers_dir" string => "/etc/sudoers.d";
