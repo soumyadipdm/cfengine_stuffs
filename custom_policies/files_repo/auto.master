@@ -12,6 +12,8 @@
 #	options are explicitly given.
 #
 /net	-hosts
+
+/mnt/data/repo/7  -fstype=iso9660,loop,ro,relatime  /media/sf_centos7_dvd/CentOS-7-x86_64-DVD-1503-01.iso
 #
 # Include central master map if it can be found using
 # nsswitch sources.
@@ -21,4 +23,5 @@
 # same will not be seen as the first read key seen takes
 # precedence.
 #
+
 +auto.master
