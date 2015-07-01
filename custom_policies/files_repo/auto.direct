@@ -1,1 +1,1 @@
-/mnt/data/repo/7  -fstype=iso9660,loop,ro,relatime  /media/sf_centos7_dvd/CentOS-7-x86_64-DVD-1503-01.iso
+/mnt/data/repo/7  -fstype=iso9660,loop,ro,relatime  :/media/sf_centos7_dvd/CentOS-7-x86_64-DVD-1503-01.iso
