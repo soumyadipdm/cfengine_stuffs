@@ -1,12 +1,13 @@
 bundle agent my_autofs {
   vars:
       "auto_package" slist => { "autofs", "nfs-utils" };
+      "autofs_files" slist => { "auto.master", "auto.direct" };
 
   files:
     cfe_mps::
-      "/etc/auto.master"
+      "$(autofs_files)"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.master"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/$(autofs_files)",
         classes => if_repaired("autofs_copied");
 
   packages:
