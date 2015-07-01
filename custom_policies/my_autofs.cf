@@ -20,7 +20,16 @@ bundle agent my_autofs {
     cfe_mps::
       "/usr/sbin/automount" restart_class => "automount_not_running";
 
-  services:
+  commands:
     cfe_mps.(automount_not_running|autofs_copied)::
-      "autofs" service_policy => "restart";
+      "/usr/bin/systemctl restart autofs"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+  reports:
+    cfe_mps.autofs_copied::
+      "cf3: /etc/auto.master has changed";
+
+    cfe_mps.autofs_restarted::
+      "cf3: automount service has been restarted";
 }
