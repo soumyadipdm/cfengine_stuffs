@@ -1,13 +1,7 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-## mps/infra host ##
-192.168.56.101  infra01.local.net
-
-## app hosts #### mps/infra host ##
-192.168.56.101  infra01.local.net
-
-## app hosts #### mps/infra host ##
+#### mps/infra host ##
 192.168.56.101  infra01.local.net
 
 ## app hosts ##
