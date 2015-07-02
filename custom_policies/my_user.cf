@@ -2,21 +2,31 @@ bundle agent my_user {
   vars:
     any::
       "users" slist => { "unixguy" };
+### start unixguy ###
     linux::
       "password[unixguy]"
         string =>
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
+    freebsd::
+      "password[unixguy]"
+        string =>
+          "$6$CUubOkVF5q2s.eOd$ZhfXZrK8nGtehCJNuqES5Omv.mN.o6Iy7kLvwFeCcq3WYguztyeW4PhSBhVSOSVOSgV.lV2GFH.9q557oaYfx0";
 
     any::
       "sshkey[unixguy]"
         string =>
           "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixguy@app01.local.net";
 
-    freebsd::
-      "password[unixguy]"
-        string =>
-          "$6$CUubOkVF5q2s.eOd$ZhfXZrK8nGtehCJNuqES5Omv.mN.o6Iy7kLvwFeCcq3WYguztyeW4PhSBhVSOSVOSgV.lV2GFH.9q557oaYfx0";
+    linux::
+      "uid[unixguy]" string => "10000";
+      #"gid[unixguy]" string => "10000";
 
+    freebsd::
+      "pwline[unixguy]"
+        string => "unixguy:$(password[unixguy]):10000:10000::0:0:User &:/home/unixguy:/bin/bash";
+
+
+### end unixguy ###
     any::
       "privileged_users" slist => { "unixguy" };
 
@@ -30,10 +40,6 @@ bundle agent my_user {
         string => "/export/home/",
         policy => "free";
 
-    freebsd::
-      "pwline[unixguy]"
-        string => "unixguy:$(password[unixguy]):10000:10000::0:0:User &:/home/unixguy:/bin/bash";
-
     centos|solaris::
       "sudoers_dir" string => "/etc/sudoers.d";
 
@@ -46,13 +52,13 @@ bundle agent my_user {
 
   users:
     # sadly users promise is not supported on FreeBSD
-    !freebsd.generic_host::
+    any.!freebsd::
       "$(users)"
         policy => "present",
         home_dir => "$(homedir)$(users)",
         password => hashed_password("$(password[$(users)])"),
         shell => "/bin/bash",
-        # uid => "500",
+        uid => "$(uid[$(users)])",
         classes => if_repaired("$(users)_created");
 
   files:
