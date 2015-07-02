@@ -15,7 +15,7 @@ bundle agent my_user {
     any::
       "sshkey[unixguy]"
         string =>
-          "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixguy@app01.local.net";
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqnPBiEj95GU834sbcBXzYLDmzG9c1NeYUHwNvSTC/YmylhaPwmqGc9aGetILlnH5/9UxhY3PNB/nszdmST89QQ/xXkmNXT99qBhSWUKwzLL9zphDiWB7NGfhGgZqosw2mJDl/p5CD083Bprbg2zI9mOBi4uHF84+aBmw2EZV79Q== unixguy@infra01.local.net";
 
     linux::
       "uid[unixguy]" string => "10000";
