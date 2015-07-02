@@ -12,11 +12,6 @@ bundle agent my_services {
     cfe_mps::
       "/usr/sbin/httpd" restart_class => "restart_httpd";
 
-  commands:
-    cfe_mps.restart_httpd::
-      "/usr/bin/systemctl restart httpd"
-      classes => if_repaired("httpd_started");
-
   services:
     centos::
       "kdump" service_policy => "stop";
@@ -36,6 +31,10 @@ bundle agent my_services {
       "sshd"
         service_policy => "start",
         classes => if_repaired("sshd_running");
+
+  commands:
+    cfe_mps.restart_httpd::
+      "/usr/bin/systemctl restart httpd" classes => if_repaired("httpd_started");
 
   reports:
     mysqld_started::

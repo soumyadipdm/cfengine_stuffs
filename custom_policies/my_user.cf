@@ -2,7 +2,7 @@ bundle agent my_user {
   vars:
     any::
       "users" slist => { "unixguy" };
-### start unixguy ###
+    ### start unixguy ###
     linux::
       "password[unixguy]"
         string =>
@@ -19,14 +19,13 @@ bundle agent my_user {
 
     linux::
       "uid[unixguy]" string => "10000";
-      #"gid[unixguy]" string => "10000";
+      # "gid[unixguy]" string => "10000";
 
     freebsd::
       "pwline[unixguy]"
         string => "unixguy:$(password[unixguy]):10000:10000::0:0:User &:/home/unixguy:/bin/bash";
 
-
-### end unixguy ###
+    ### end unixguy ###
     any::
       "privileged_users" slist => { "unixguy" };
 

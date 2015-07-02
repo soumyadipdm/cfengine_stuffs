@@ -47,8 +47,7 @@ bundle agent my_manage_mps {
       "$(enc_process)" restart_class => "restart_enc_service";
 
     activate_policy::
-      "/usr/sbin/dnsmasq"
-        restart_class => "restart_dnsmasq";
+      "/usr/sbin/dnsmasq" restart_class => "restart_dnsmasq";
 
   commands:
     activate_policy.enc_openldap_service_installed::
@@ -57,12 +56,10 @@ bundle agent my_manage_mps {
 
     activate_policy.restart_enc_service::
       "/usr/bin/systemctl restart enc-openldap.service"
-      classes => if_else("restart_enc_successful",
-                         "restart_enc_unsuccessful");
+        classes => if_else("restart_enc_successful", "restart_enc_unsuccessful");
 
     activate_polciy.(etc_hosts_changed|restart_dnsmasq)::
-      "/usr/bin/systemctl restart dnsmasq"
-        classes => if_repaired("dnsmasq_restart_successful");
+      "/usr/bin/systemctl restart dnsmasq" classes => if_repaired("dnsmasq_restart_successful");
 
   reports:
     activate_policy.restart_enc_service::
@@ -79,8 +76,7 @@ bundle agent my_manage_mps {
 
     activate_policy.etc_hosts_changed::
       "cf3: /etc/hosts file has changed";
-      
+
     activate_policy.dnsmasq_restart_successful::
       "cf3: dnsmasq is successfully restarted";
-
 }
