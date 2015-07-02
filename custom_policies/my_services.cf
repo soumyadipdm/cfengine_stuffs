@@ -9,6 +9,13 @@ bundle agent my_services {
 
     mysql_server::
       "^.*mysqld\s+.*$" restart_class => "restart_mysql";
+    cfe_mps::
+      "/usr/sbin/httpd" restart_class => "restart_httpd";
+
+  commands:
+    cfe_mps.restart_httpd::
+      "/usr/bin/systemctl restart httpd"
+      classes => if_repaired("httpd_started");
 
   services:
     centos::
@@ -24,11 +31,6 @@ bundle agent my_services {
       "mysqld"
         service_policy => "start",
         classes => if_repaired("mysqld_started");
-
-    cfe_mps.!httpd_started::
-      "httpd"
-        service_policy => "start",
-        classes => if_repaired("httpd_started");
 
     generic_host.sshd_stopped::
       "sshd"
