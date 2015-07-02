@@ -1,0 +1,23 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+## mps/infra host ##
+192.168.56.101  infra01.local.net
+
+## app hosts #### mps/infra host ##
+192.168.56.101  infra01.local.net
+
+## app hosts #### mps/infra host ##
+192.168.56.101  infra01.local.net
+
+## app hosts ##
+192.168.56.201  app01.local.net irc.local.net
+192.168.56.159  app02.local.net
+192.168.56.158  app03.local.net
+192.168.56.151  app04.local.net
+192.168.56.152  app05.local.net
+192.168.56.155  app06.local.net
+192.168.56.156  app07.local.net
+192.168.56.157  app08.local.net
+192.168.56.204  app09.local.net
+192.168.56.222  router.local.net
