@@ -13,6 +13,7 @@ bundle common custom_policy {
       # policy files array
       # DO NOT ADD ANYTHING IN THE ARRAY BEFORE THIS LINE
 
+      "custom_bundle_inputs[my_repo]" string => "$(custom_policies_dir)/my_repo.cf";
       "custom_bundle_inputs[my_prep_cfe]" string => "$(custom_policies_dir)/my_prep_cfe.cf";
       "custom_bundle_inputs[my_manage_mps]" string => "$(custom_policies_dir)/my_manage_mps.cf";
       "custom_bundle_inputs[my_autofs]" string => "$(custom_policies_dir)/my_autofs.cf";
@@ -21,7 +22,6 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_motd]" string => "$(custom_policies_dir)/my_motd.cf";
       "custom_bundle_inputs[my_ssh]" string => "$(custom_policies_dir)/my_ssh.cf";
       "custom_bundle_inputs[my_package]" string => "$(custom_policies_dir)/my_package.cf";
-      "custom_bundle_inputs[my_repo]" string => "$(custom_policies_dir)/my_repo.cf";
       "custom_bundle_inputs[my_freespace]" string => "$(custom_policies_dir)/my_freespace.cf";
       "custom_bundle_inputs[my_services]" string => "$(custom_policies_dir)/my_services.cf";
       # "custom_bundle_inputs[my_test]" string => "$(custom_policies_dir)/my_test.cf";
