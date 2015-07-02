@@ -47,7 +47,7 @@ bundle agent my_manage_mps {
       "$(enc_process)" restart_class => "restart_enc_service";
 
     activate_policy::
-      "dnsmasq"
+      "/usr/sbin/dnsmasq"
         restart_class => "restart_dnsmasq";
 
   commands:
