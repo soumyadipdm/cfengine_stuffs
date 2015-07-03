@@ -3,7 +3,12 @@ bundle agent my_monitoring {
       "zabbix-packages" slist => { "zabbix-agent", "zabbix" };
 
       "ganglia-server-packages" slist => { "ganglia-gmetad", "ganglia-web" };
-      "ganglia-client-packages" slist => { "ganglia", "ganglia-gmond", "ganglia-devel", "ganglia-gmond-python" };
+      "ganglia-client-packages" slist => {
+                                         "ganglia",
+                                         "ganglia-gmond",
+                                         "ganglia-devel",
+                                         "ganglia-gmond-python",
+                                         };
 
   classes:
       "gmond_not_installed" not => fileexists("/usr/sbin/gmond");
@@ -60,16 +65,19 @@ bundle agent my_monitoring {
     cfe_mps.(gmetad_conf_changed|restart_gmetad)::
       "/usr/bin/systemctl restart gmetad.service";
 
-    any::
+    centos_7::
       "/usr/bin/systemctl enable gmond.service";
+    centos_6::
+      "/sbin/chkconfig gmond on";
 
-    any.(gmond_conf_changed|restart_gmond)::
+    centos_7.(gmond_conf_changed|restart_gmond)::
       "/usr/bin/systemctl restart gmond.service";
+    centos_6.(gmond_conf_changed|restart_gmond)::
+      "/sbin/service gmond restart";
 
   reports:
     cfe_mps.gmetad_conf_changed::
       "cf3: /etc/ganglia/gmetad.conf has changed, restarting gmetad service";
     any.gmond_conf_changed::
       "cf3: /etc/ganglia/gmond.conf has changed, restarting gmond service";
-
 }
