@@ -1,9 +1,9 @@
 bundle agent my_monitoring {
   vars:
-      "zabbix-packages" slist => { "zabbix-agent", "zabbix" };
+      "zabbix_packages" slist => { "zabbix-agent", "zabbix" };
 
-      "ganglia-server-packages" slist => { "ganglia-gmetad", "ganglia-web" };
-      "ganglia-client-packages" slist => {
+      "ganglia_server_packages" slist => { "ganglia-gmetad", "ganglia-web" };
+      "ganglia_client_packages" slist => {
                                          "ganglia",
                                          "ganglia-gmond",
                                          "ganglia-devel",
@@ -29,20 +29,20 @@ bundle agent my_monitoring {
 
   packages:
     cfe_mps.!gmetad_not_installed::
-      "$(ganglia-server-packages)"
+      "$(ganglia_server_packages)"
         package_policy => "add",
         package_method => yum_rpm,
         package_architectures => { "x86_64" },
-        classes => if_repaired("ganglia-server-packages_installed");
+        classes => if_repaired("ganglia_server_packages_installed");
 
     centos.!gmond_not_installed::
-      "$(ganglia-client-packages)"
+      "$(ganglia_client_packages)"
         package_policy => "add",
         package_method => yum_rpm,
         package_version => "3.7.1-3.el7",
         package_select => "==",
         package_architectures => { "x86_64" },
-        classes => if_repaired("ganglia-client-packages_installed");
+        classes => if_repaired("ganglia_client_packages_installed");
 
     centos::
       "$(zabbix-packages)"
