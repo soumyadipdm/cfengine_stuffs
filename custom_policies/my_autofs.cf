@@ -32,7 +32,7 @@ bundle agent my_autofs {
 
   processes:
     centos::
-      "/usr/sbin/automount" restart_class => "automount_not_running";
+      "automount" restart_class => "automount_not_running";
 
   commands:
     centos_7.(automount_not_running|autofs_copied)::
