@@ -1,7 +1,7 @@
 bundle agent my_autofs {
   vars:
     centos::
-      "auto_package" slist => { "autofs", "nfs-utils" };
+      "auto_package" slist => { "autofs", "nfs-utils", "rpcbind" };
 
   files:
     centos::
@@ -33,6 +33,7 @@ bundle agent my_autofs {
   processes:
     centos::
       "automount" restart_class => "automount_not_running";
+      "rpcbind" restart_class => "rpcbind_not_running";
 
   commands:
     centos_7.(automount_not_running|autofs_copied)::
@@ -40,8 +41,18 @@ bundle agent my_autofs {
         contain => silent,
         classes => if_repaired("autofs_restarted");
 
+    centos_7.rpcbind_not_running::
+      "/usr/bin/systemctl restart rpcbind"
+        contain => silent,
+        classes => if_repaired("rpcbind_restarted");
+
     centos_6.(automount_not_running|autofs_copied)::
       "/sbin/service autofs restart"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+    centos_6.rpcbind_not_running::
+      "/sbin/service rpcbind restart"
         contain => silent,
         classes => if_repaired("autofs_restarted");
 
