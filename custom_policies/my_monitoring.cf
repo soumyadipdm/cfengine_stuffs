@@ -9,6 +9,8 @@ bundle agent my_monitoring {
                                          "ganglia-devel",
                                          "ganglia-gmond-python",
                                          };
+    centos_7::
+      "ganglia_client_package_version" string => "3.7.1-3.el7";
 
   classes:
       "gmond_not_installed" not => fileexists("/usr/sbin/gmond");
@@ -28,18 +30,18 @@ bundle agent my_monitoring {
         classes => if_repaired("gmond_conf_changed");
 
   packages:
-    cfe_mps.!gmetad_not_installed::
+    cfe_mps.gmetad_not_installed::
       "$(ganglia_server_packages)"
         package_policy => "add",
         package_method => yum_rpm,
         package_architectures => { "x86_64" },
         classes => if_repaired("ganglia_server_packages_installed");
 
-    centos.!gmond_not_installed::
+    centos.gmond_not_installed::
       "$(ganglia_client_packages)"
         package_policy => "add",
         package_method => yum_rpm,
-        package_version => "3.7.1-3.el7",
+        package_version => "$(ganglia_client_package_version)",
         package_select => "==",
         package_architectures => { "x86_64" },
         classes => if_repaired("ganglia_client_packages_installed");
