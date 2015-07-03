@@ -8,6 +8,7 @@ bundle agent my_package {
                                 "python-ldap",
                                 "python-argparse",
                                 "sg3_utils",
+                                "lsscsi",
                                 "curl",
                                 "wget",
                                 "vim",
