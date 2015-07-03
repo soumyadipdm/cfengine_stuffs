@@ -7,7 +7,7 @@ bundle agent my_autofs {
     centos::
       "/etc/auto.master"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auot.master"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.master"),
         classes => if_repaired("autofs_copied");
 
     centos.!cfe_mps::
