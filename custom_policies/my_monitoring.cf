@@ -1,12 +1,75 @@
 bundle agent my_monitoring {
   vars:
-      "zabbix_server" string => "$(my_definitions.infra_server[infra01.local.net])";
+      "zabbix-packages" slist => { "zabbix-agent", "zabbix" };
+
+      "ganglia-server-packages" slist => { "ganglia-gmetad", "ganglia-web" };
+      "ganglia-client-packages" slist => { "ganglia", "ganglia-gmond", "ganglia-devel", "ganglia-gmond-python" };
+
+  classes:
+      "gmond_not_installed" not => fileexists("/usr/sbin/gmond");
+      "gmetad_not_installed" not => fileexists("/usr/sbin/gmetad");
+
+  files:
+    cfe_mps::
+      "/etc/ganglia/gmetad.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/ganglia/gmetad.conf"),
+        classes => if_repaired("gmetad_conf_changed");
+
+    any::
+      "/etc/ganglia/gmond.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/ganglia/gmond.conf"),
+        classes => if_repaired("gmond_conf_changed");
 
   packages:
+    cfe_mps.!gmetad_not_installed::
+      "$(ganglia-server-packages)"
+        package_policy => "add",
+        package_method => yum_rpm,
+        package_architectures => { "x86_64" },
+        classes => if_repaired("ganglia-server-packages_installed");
+
+    centos.!gmond_not_installed::
+      "$(ganglia-client-packages)"
+        package_policy => "add",
+        package_method => yum_rpm,
+        package_version => "3.7.1-3.el7",
+        package_select => "==",
+        package_architectures => { "x86_64" },
+        classes => if_repaired("ganglia-client-packages_installed");
+
     centos::
-      "zabbix-agent"
+      "$(zabbix-packages)"
         package_policy => "delete",
         package_method => yum_rpm,
         package_select => "==",
         package_architectures => { "x86_64" };
+
+  processes:
+    cfe_mps::
+      "/usr/sbin/gmetad" restart_class => "restart_gmetad";
+
+    any::
+      "/usr/sbin/gmond" restart_class => "restart_gmond";
+
+  commands:
+    cfe_mps::
+      "/usr/bin/systemctl enable gmetad.service";
+
+    cfe_mps.(gmetad_conf_changed|restart_gmetad)::
+      "/usr/bin/systemctl restart gmetad.service";
+
+    any::
+      "/usr/bin/systemctl enable gmond.service";
+
+    any.(gmond_conf_changed|restart_gmond)::
+      "/usr/bin/systemctl restart gmond.service";
+
+  reports:
+    cfe_mps.gmetad_conf_changed::
+      "cf3: /etc/ganglia/gmetad.conf has changed, restarting gmetad service";
+    any.gmond_conf_changed::
+      "cf3: /etc/ganglia/gmond.conf has changed, restarting gmond service";
+
 }
