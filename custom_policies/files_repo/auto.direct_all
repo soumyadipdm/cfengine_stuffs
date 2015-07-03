@@ -1,0 +1,1 @@
+/mnt/nas01/export01 -fstype=nfs,rw,hard,intr,tcp,rsize=32768,wsize=32768  192.168.56.101:/mnt/export01

@@ -1,29 +1,47 @@
 bundle agent my_autofs {
   vars:
+    centos::
       "auto_package" slist => { "autofs", "nfs-utils" };
-      "autofs_files" slist => { "auto.master", "auto.direct" };
 
   files:
-    cfe_mps::
-      "/etc/$(autofs_files)"
+    centos::
+      "/etc/auto.master"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/$(autofs_files)"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auot.master"),
+        classes => if_repaired("autofs_copied");
+
+    centos.!cfe_mps::
+      "/etc/auto.direct"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.direct_all"),
+        classes => if_repaired("autofs_copied");
+
+    cfe_mps::
+      "/etc/auto.direct"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.direct_infra"),
         classes => if_repaired("autofs_copied");
 
   packages:
-    any::
+    centos::
       "$(auto_package)"
-        package_method => generic,
-        package_architectures => { "x86_64" },
-        package_policy => "add";
+        package_policy => "add",
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
 
   processes:
-    cfe_mps::
+    centos::
       "/usr/sbin/automount" restart_class => "automount_not_running";
 
   commands:
-    cfe_mps.(automount_not_running|autofs_copied)::
+    centos_7.(automount_not_running|autofs_copied)::
       "/usr/bin/systemctl restart autofs"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+    centos_6.(automount_not_running|autofs_copied)::
+      "/sbin/service autofs restart"
         contain => silent,
         classes => if_repaired("autofs_restarted");
 

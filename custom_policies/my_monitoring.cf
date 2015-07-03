@@ -52,7 +52,6 @@ bundle agent my_monitoring {
         package_architectures => { "x86_64" },
         classes => if_repaired("ganglia_client_packages_installed");
 
-
     centos::
       "$(zabbix-packages)"
         package_policy => "delete",
