@@ -77,7 +77,7 @@ sleep 2
 
 rm -f /tmp/cfengine.rpm
 systemctl disable systemd-cfengine-bootstrap.service
-rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
+# rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
 rm -f /etc/systemd/system/multi-user.target.wants/systemd-cfengine-bootstrap.service
 EOF
 
