@@ -36,11 +36,16 @@ cat >>/etc/rc.d/rc.local <<'EOF'
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
+EOF
+
+cat >>/etc/rc.d/rc.local <<EOF
 
 if [[ -f /root/cfe-installed ]]; then
     /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
+EOF
 
+cat >>/etc/rc.d/rc.local <<'EOF'
 sleep 2
 
 # rm -f /tmp/cfengine.rpm
@@ -73,7 +78,7 @@ cat >>/root/bootstrap_cfe <<EOF
 # curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install http://{repo_srv}/repo/cfengine/7/${cfengine_el7}
+yum -q -y --disablerepo='*' install http://${repo_srv}/repo/cfengine/7/${cfengine_el7}
 EOF
 
 cat >>/root/bootstrap_cfe <<'EOF'
@@ -81,13 +86,17 @@ cat >>/root/bootstrap_cfe <<'EOF'
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
+EOF
 
+cat >>/root/bootstrap_cfe <<EOF
 if [[ -f /root/cfe-installed ]]; then
     /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
+EOF
 
 sleep 2
 
+cat >>/root/bootstrap_cfe <<'EOF'
 # rm -f /tmp/cfengine.rpm
 systemctl disable systemd-cfengine-bootstrap.service
 # rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
