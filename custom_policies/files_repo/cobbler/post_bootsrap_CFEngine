@@ -25,10 +25,11 @@ if [[ "${release}" != 'release 6' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://${repo_srv}/cfengine/6/${cfengine_el6}"
+curl -o "/root/${cfengine_el6}" "http://${repo_srv}/cfengine/6/${cfengine_el6}"
 
 rm -f /etc/yum.repos.d/*.repo
 # yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
+yum -q -y --disablerepo='*' install "/root/${cfengine_el6}"
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
@@ -69,10 +70,11 @@ if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
+curl -o "/root/${cfengine_el7}" "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
 # yum -q -y --disablerepo='*' install http://${repo_srv}/repo/cfengine/7/${cfengine_el7}
+yum -q -y --disablerepo='*' install "/root/${cfengine_el7}"
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
