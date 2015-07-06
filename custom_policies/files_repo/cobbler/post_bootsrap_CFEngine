@@ -68,7 +68,7 @@ if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
 EOF
-cat >>/etc/rc.d/rc.local <<EOF
+cat >>/root/bootstrap_cfe <<EOF
 
 # curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
