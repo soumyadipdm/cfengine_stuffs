@@ -23,11 +23,15 @@ fi
 if [[ "${release}" != 'release 6' ]]; then
     exit 1
 fi
+EOF
+cat >>/etc/rc.d/rc.local <<EOF
 
 # curl -o /tmp/cfengine.rpm "http://${repo_srv}/cfengine/6/${cfengine_el6}"
 
 rm -f /etc/yum.repos.d/*.repo
 yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
+EOF
+cat >>/etc/rc.d/rc.local <<'EOF'
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
@@ -63,11 +67,16 @@ fi
 if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
+EOF
+cat >>/etc/rc.d/rc.local <<EOF
 
 # curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
 yum -q -y --disablerepo='*' install http://{repo_srv}/repo/cfengine/7/${cfengine_el7}
+EOF
+
+cat >>/root/bootstrap_cfe <<'EOF'
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
