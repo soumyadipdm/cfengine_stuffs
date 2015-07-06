@@ -25,10 +25,10 @@ if [[ "${release}" != 'release 6' ]]; then
     exit 1
 fi
 
-# curl -o /tmp/cfengine.rpm "http://${repo_srv}/cfengine/6/${cfengine_el6}"
+curl -o /tmp/cfengine.rpm "http://${repo_srv}/cfengine/6/${cfengine_el6}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
+# yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
@@ -40,7 +40,7 @@ fi
 
 sleep 2
 
-# rm -f /tmp/cfengine.rpm
+rm -f /tmp/cfengine.rpm
 mv /root/rc.local.bak /etc/rc.d/rc.local
 chmod 744 /etc/rc.d/rc.local
 EOF
@@ -69,10 +69,10 @@ if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
 
-# curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
+curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install http://${repo_srv}/repo/cfengine/7/${cfengine_el7}
+# yum -q -y --disablerepo='*' install http://${repo_srv}/repo/cfengine/7/${cfengine_el7}
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
@@ -84,7 +84,7 @@ fi
 
 sleep 2
 
-# rm -f /tmp/cfengine.rpm
+rm -f /tmp/cfengine.rpm
 systemctl disable systemd-cfengine-bootstrap.service
 # rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
 rm -f /etc/systemd/system/multi-user.target.wants/systemd-cfengine-bootstrap.service
