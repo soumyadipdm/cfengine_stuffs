@@ -6,6 +6,10 @@
 #set $prf = $getVar('$profile', None)
 #if 'CentOS6' in $prf
 #raw
+declare -r repo_srv="192.168.56.101"
+declare -r cfengine_el6="cfengine-community-3.6.5-1.x86_64.rpm"
+declare -r cfengine_el7="cfengine-community-3.6.5-1.el7.x86_64.rpm"
+
 mv /etc/rc.d/rc.local /root/rc.local.bak
 cat >>/etc/rc.d/rc.local <<'EOF'
 #!/bin/bash 
@@ -20,22 +24,22 @@ if [[ "${release}" != 'release 6' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine/cfengine-community-3.6.5-1.x86_64.rpm"
+# curl -o /tmp/cfengine.rpm "http://${repo_srv}/cfengine/6/${cfengine_el6}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
 
 if [[ -f /root/cfe-installed ]]; then
-    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+    /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
 sleep 2
 
-rm -f /tmp/cfengine.rpm
+# rm -f /tmp/cfengine.rpm
 mv /root/rc.local.bak /etc/rc.d/rc.local
 chmod 744 /etc/rc.d/rc.local
 EOF
@@ -60,22 +64,22 @@ if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine-el7/cfengine-community-3.6.5-1.el7.x86_64.rpm"
+# curl -o /tmp/cfengine.rpm "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+yum -q -y --disablerepo='*' install http://{repo_srv}/repo/cfengine/7/${cfengine_el7}
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
 
 if [[ -f /root/cfe-installed ]]; then
-    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+    /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
 sleep 2
 
-rm -f /tmp/cfengine.rpm
+# rm -f /tmp/cfengine.rpm
 systemctl disable systemd-cfengine-bootstrap.service
 # rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
 rm -f /etc/systemd/system/multi-user.target.wants/systemd-cfengine-bootstrap.service
