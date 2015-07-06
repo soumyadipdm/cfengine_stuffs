@@ -89,7 +89,7 @@ bundle agent my_cobbler {
 
     cobbler_host.centos_7.(sync_cobbler|cobbler_deployed)::
       "/usr/bin/cobbler sync"
-        contain => silent,
+        #contain => silent,
         classes => if_else("sync_cobbler_success", "sync_cobbler_failed");
 
     ### below are the one time jobs
