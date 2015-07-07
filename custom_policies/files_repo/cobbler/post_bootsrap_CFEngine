@@ -21,7 +21,7 @@ else
     release="None"
 fi
 
-if [[ "${release}" != 'release 6' ]]; then
+if [[ "${release}" != '6.' ]]; then
     exit 1
 fi
 
@@ -49,6 +49,8 @@ EOF
 chmod 744 /etc/rc.d/rc.local
 #end raw
 # end of CentOS6.* CFEngine bootstrap
+
+# ########### CentOS 7 ###########
 
 #else if 'CentOS7' in $prf
 # create the bootstrap script

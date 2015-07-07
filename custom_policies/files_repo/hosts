@@ -9,7 +9,7 @@
 192.168.56.222  router.local.net
 
 ## app hosts ##
-192.168.56.201  app01.local.net irc.local.net
+192.168.56.154  app01.local.net irc.local.net
 192.168.56.159  app02.local.net
 192.168.56.158  app03.local.net
 192.168.56.151  app04.local.net
