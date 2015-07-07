@@ -39,6 +39,9 @@ if [[ -f /root/cfe-installed ]]; then
     /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
 sleep 2
 
 rm -f /tmp/cfengine.rpm
@@ -86,6 +89,9 @@ if [[ -f /root/cfe-installed ]]; then
     /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
 sleep 2
 
 rm -f /tmp/cfengine.rpm
