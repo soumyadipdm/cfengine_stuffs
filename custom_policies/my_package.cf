@@ -25,6 +25,7 @@ bundle agent my_package {
                                 "python-psutil",
                                 "tree",
                                 "git",
+                                "mailx",
                                 };
 
   packages:
