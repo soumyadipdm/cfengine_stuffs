@@ -1,13 +1,11 @@
 # this is a dynamic motd file
 host=$( hostname -f )
-kernel=$( uname -r )
-distro=$( awk '{ print $1 }' /etc/redhat-release )
-version=$( awk '{ print $3 }' /etc/redhat-release )
-os="${distro} ${version}"
+kernel="$( uname -rs )"
+os=$( cat /etc/redhat-release )
 freemem=$( free -k | awk '/^Mem/ {printf("%u%%", 100*$4/$2);}' )
 num_process=$( ps -elf | grep -cv '[W]CHAN' )
-loadavg=$( uptime | awk -F':' '{ print $NF }' | sed 's/^ *//g' )
-rootfs_usage=$( df -h / | awk '{ a = $4 } END { print a }' )
+loadavg="$( cut -d' ' -f1-3 /proc/loadavg )"
+rootfs_usage=$( df / | awk '{ if($5 !~/^Use%$/) print $5; }' )
 
 
 tput setaf 2
@@ -23,12 +21,12 @@ EOF
 tput sgr0
 cat <<EOF
 +----------------------------------------------------------------+
-   * Host Name:          ${host}                     
-   * Kernel:             ${kernel}                   
-   * OS:                 ${os}                                   
-   * Free RAM:           ${freemem}                 
+   * Host Name:          ${host}
+   * Kernel:             ${kernel}
+   * Build:              ${os}
+   * Free RAM:           ${freemem}
    * Processes:          ${num_process}
    * Load Avg:           ${loadavg}
-   * Rootfs Usage:       ${rootfs_usage}
+   * Rootfs Used:        ${rootfs_usage}
 +----------------------------------------------------------------+
 EOF
