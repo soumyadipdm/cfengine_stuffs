@@ -1,28 +1,65 @@
 bundle agent my_autofs {
   vars:
-      "autofs_files" slist => { "auto.master", "auto.home" };
-
-      "auto_package" slist => { "autofs", "nfs-utils" };
+    centos::
+      "auto_package" slist => { "autofs", "nfs-utils", "rpcbind" };
 
   files:
-    generic_host.!(cfe_mps|ubuntu_desktop)::
-      "/etc/$(autofs_files)"
+    centos::
+      "/etc/auto.master"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/$(autofs_files)"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.master"),
+        classes => if_repaired("autofs_copied");
+
+    centos.!cfe_mps::
+      "/etc/auto.direct"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.direct_all"),
+        classes => if_repaired("autofs_copied");
+
+    cfe_mps::
+      "/etc/auto.direct"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/auto.direct_infra"),
         classes => if_repaired("autofs_copied");
 
   packages:
-    (linux|freebsd).generic_host.!(cfe_mps|ubuntu_desktop)::
+    centos::
       "$(auto_package)"
-        package_method => generic,
-        package_architectures => { "x86_64" },
-        package_policy => "add";
+        package_policy => "add",
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
 
   processes:
-    generic_host::
-      "/usr/sbin/automount" restart_class => "automount_not_running";
+    centos::
+      "automount" restart_class => "automount_not_running";
+      "rpcbind" restart_class => "rpcbind_not_running";
 
-  services:
-    generic_host.(automount_not_running|autofs_copied)::
-      "autofs" service_policy => "start";
+  commands:
+    centos_7.(automount_not_running|autofs_copied)::
+      "/usr/bin/systemctl restart autofs"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+    centos_7.rpcbind_not_running::
+      "/usr/bin/systemctl restart rpcbind"
+        contain => silent,
+        classes => if_repaired("rpcbind_restarted");
+
+    centos_6.(automount_not_running|autofs_copied)::
+      "/sbin/service autofs restart"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+    centos_6.rpcbind_not_running::
+      "/sbin/service rpcbind restart"
+        contain => silent,
+        classes => if_repaired("autofs_restarted");
+
+  reports:
+    cfe_mps.autofs_copied::
+      "cf3: /etc/auto.master has changed";
+
+    cfe_mps.autofs_restarted::
+      "cf3: automount service has been restarted";
 }

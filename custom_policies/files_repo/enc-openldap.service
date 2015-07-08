@@ -1,0 +1,10 @@
+[Unit]
+Description=External Node Classification via OpenLDAP
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/export/content/openldap/libexec/slapd -u openldap -g openldap -h "ldap:// ldaps://"
+
+[Install]
+WantedBy=default.target

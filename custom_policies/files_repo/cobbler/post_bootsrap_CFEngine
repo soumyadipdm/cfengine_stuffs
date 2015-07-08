@@ -6,9 +6,14 @@
 #set $prf = $getVar('$profile', None)
 #if 'CentOS6' in $prf
 #raw
+
 mv /etc/rc.d/rc.local /root/rc.local.bak
 cat >>/etc/rc.d/rc.local <<'EOF'
 #!/bin/bash 
+
+declare -r repo_srv="192.168.56.101"
+declare -r cfengine_el6="cfengine-community-3.6.5-1.x86_64.rpm"
+declare -r cfengine_el7="cfengine-community-3.6.5-1.el7.x86_64.rpm"
 
 if [[ -f /etc/centos-release ]]; then
     release=$( egrep -o "release 7|6\." /etc/centos-release )
@@ -16,23 +21,27 @@ else
     release="None"
 fi
 
-if [[ "${release}" != 'release 6' ]]; then
+if [[ "${release}" != '6.' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine/cfengine-community-3.6.5-1.x86_64.rpm"
+curl -o "/root/${cfengine_el6}" "http://${repo_srv}/cfengine/6/${cfengine_el6}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+# yum -q -y --disablerepo='*' install http://${repo_srv}/cfengine/6/${cfengine_el6}
+yum -q -y --disablerepo='*' install "/root/${cfengine_el6}"
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
 
 if [[ -f /root/cfe-installed ]]; then
-    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+    /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
 sleep 2
 
 rm -f /tmp/cfengine.rpm
@@ -44,11 +53,17 @@ chmod 744 /etc/rc.d/rc.local
 #end raw
 # end of CentOS6.* CFEngine bootstrap
 
+# ########### CentOS 7 ###########
+
 #else if 'CentOS7' in $prf
 # create the bootstrap script
 #raw
 cat >>/root/bootstrap_cfe <<'EOF'
 #!/bin/bash
+
+declare -r repo_srv="192.168.56.101"
+declare -r cfengine_el6="cfengine-community-3.6.5-1.x86_64.rpm"
+declare -r cfengine_el7="cfengine-community-3.6.5-1.el7.x86_64.rpm"
 
 if [[ -f /etc/centos-release ]]; then
     release=$( egrep -o "release 7|6\." /etc/centos-release )
@@ -60,24 +75,28 @@ if [[ "${release}" != 'release 7' ]]; then
     exit 1
 fi
 
-curl -o /tmp/cfengine.rpm "http://192.168.56.201/cfengine-el7/cfengine-community-3.6.5-1.el7.x86_64.rpm"
+curl -o "/root/${cfengine_el7}" "http://${repo_srv}/repo/cfengine/7/${cfengine_el7}"
 
 rm -f /etc/yum.repos.d/*.repo
-yum -q -y --disablerepo='*' install /tmp/cfengine.rpm
+# yum -q -y --disablerepo='*' install http://${repo_srv}/repo/cfengine/7/${cfengine_el7}
+yum -q -y --disablerepo='*' install "/root/${cfengine_el7}"
 
 if [[ $? == 0 ]]; then
     touch /root/cfe-installed
 fi
 
 if [[ -f /root/cfe-installed ]]; then
-    /var/cfengine/bin/cf-agent --bootstrap 192.168.56.201
+    /var/cfengine/bin/cf-agent --bootstrap ${repo_srv}
 fi
 
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
+/var/cfengine/bin/cf-agent -IK
 sleep 2
 
 rm -f /tmp/cfengine.rpm
 systemctl disable systemd-cfengine-bootstrap.service
-rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
+# rm -f /usr/lib/systemd/system/systemd-cfengine-bootstrap.service
 rm -f /etc/systemd/system/multi-user.target.wants/systemd-cfengine-bootstrap.service
 EOF
 

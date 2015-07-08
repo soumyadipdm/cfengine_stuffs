@@ -1,24 +1,33 @@
 bundle agent my_user {
   vars:
     any::
-      "users" slist => { "unixuser" };
+      "users" slist => { "unixguy" };
+    ### start unixguy ###
     linux::
-      "password[unixuser]"
+      "password[unixguy]"
         string =>
           "$6$zK3Swac98Lf4IoJ6$xns.AVKkePFqeJ.5F/mDMvwC1va56GLIC66pUy3Klcv5iJEKut3zYdd9ZwPux8QC6nGPBu93W.mlqXTOpXPoK0";
-
-    any::
-      "sshkey[unixuser]"
-        string =>
-          "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4lYLcZ+6j0r9kvj/rdkrVzhR3b/poPQ4iyFKU2vi2qfIAFpRV/hdo+rPD4+pElhB1ONXZupWMbL0p3U/6yCfrxvQNeLKs7kPxjdDhiKLKua6MFpLdTQHzq+P6YuCWQKsazR4mLEx532NuwFSaplF/vT1nK4jgkK/JC7Tvq9FmDeOxEKhoiw0KFHgbg0U6nu9a7MbpMR/iw43kmWYLNkbmeTE69cOsUQcldGgSsAx6D9jZRHFbx6zG5PJXGlqQ445PDEOlVfcfclQY84LCeK+nl1b2LAC9lVv59aegJQ4PIOtL1chfOUgYe1Wd2gmPtdtSjupYnGlfVC0HuglHEM7yQ== unixuser@app01.local.net";
-
     freebsd::
-      "password[unixuser]"
+      "password[unixguy]"
         string =>
           "$6$CUubOkVF5q2s.eOd$ZhfXZrK8nGtehCJNuqES5Omv.mN.o6Iy7kLvwFeCcq3WYguztyeW4PhSBhVSOSVOSgV.lV2GFH.9q557oaYfx0";
 
     any::
-      "privileged_users" slist => { "unixuser" };
+      "sshkey[unixguy]"
+        string =>
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqnPBiEj95GU834sbcBXzYLDmzG9c1NeYUHwNvSTC/YmylhaPwmqGc9aGetILlnH5/9UxhY3PNB/nszdmST89QQ/xXkmNXT99qBhSWUKwzLL9zphDiWB7NGfhGgZqosw2mJDl/p5CD083Bprbg2zI9mOBi4uHF84+aBmw2EZV79Q== unixguy@infra01.local.net";
+
+    linux::
+      "uid[unixguy]" string => "10000";
+      # "gid[unixguy]" string => "10000";
+
+    freebsd::
+      "pwline[unixguy]"
+        string => "unixguy:$(password[unixguy]):10000:10000::0:0:User &:/home/unixguy:/bin/bash";
+
+    ### end unixguy ###
+    any::
+      "privileged_users" slist => { "unixguy" };
 
     linux|freebsd::
       "homedir"
@@ -29,10 +38,6 @@ bundle agent my_user {
       "homedir"
         string => "/export/home/",
         policy => "free";
-
-    freebsd::
-      "pwline[unixuser]"
-        string => "unixuser:$(password[unixuser]):1001:1001::0:0:User &:/home/unixuser:/bin/bash";
 
     centos|solaris::
       "sudoers_dir" string => "/etc/sudoers.d";
@@ -46,17 +51,17 @@ bundle agent my_user {
 
   users:
     # sadly users promise is not supported on FreeBSD
-    !freebsd.generic_host::
+    any.!freebsd::
       "$(users)"
         policy => "present",
         home_dir => "$(homedir)$(users)",
         password => hashed_password("$(password[$(users)])"),
         shell => "/bin/bash",
-        # uid => "500",
+        uid => "$(uid[$(users)])",
         classes => if_repaired("$(users)_created");
 
   files:
-    generic_host::
+    any::
       "/home/$(users)/."
         create => "true",
         perms => mog("0750", "$(users)", "$(users)");
@@ -67,7 +72,7 @@ bundle agent my_user {
         edit_line => append_if_no_line("$(pwline[$(users)])"),
         classes => if_repaired("$(users)_created");
 
-    generic_host::
+    any::
       "$(sudoers_dir)/$(privileged_users)"
         perms => mog("0440", "root", "root"),
         create => "true",
@@ -95,6 +100,11 @@ bundle agent my_user {
         create => "true",
         perms => mog("0600", "$(users)", "$(users)"),
         edit_line => append_if_no_line("$(sshkey[$(users)])");
+
+    any::
+      "/etc/dir_colors"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/my_user/dir_colors");
 
   commands:
     freebsd.generic_host::

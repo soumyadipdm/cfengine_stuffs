@@ -3,15 +3,36 @@ bundle agent my_manage_mps {
   # as well as ENC/ldap
   vars:
       "enc_process" string => "/export/content/openldap/libexec/slapd";
-      "enc_service_command"
-        string =>
-          "/export/content/openldap/libexec/slapd -u openldap -g openldap -h \"ldap:// ldaps://\"";
 
-      "tools" slist => { "fabric" };
+      "tools" slist => { "fabric", "dnsmasq" };
 
   classes:
     any::
-      "activate_policy" or => { "cfe_mps", "app01_local_net" };
+      "activate_policy" or => { "cfe_mps", "infra01_local_net" };
+
+  files:
+    activate_policy::
+      "/etc/hosts"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/hosts"),
+        classes => if_repaired("etc_hosts_changed");
+
+    centos_7.activate_policy::
+      "/usr/lib/systemd/system/enc-openldap.service"
+        perms => mog("0744", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/enc-openldap.service"),
+        classes => if_repaired("enc_openldap_service_installed");
+
+    activate_policy::
+      "/etc/dnsmasq.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/dnsmasq.conf"),
+        classes => if_repaired("restart_enc_service");
+
+    activate_policy::
+      "/var/www/html/repo"
+        link_from => ln_s("/mnt/data/repo"),
+        move_obstructions => "true";
 
   packages:
     activate_policy::
@@ -25,18 +46,37 @@ bundle agent my_manage_mps {
     activate_policy::
       "$(enc_process)" restart_class => "restart_enc_service";
 
+    activate_policy::
+      "/usr/sbin/dnsmasq" restart_class => "restart_dnsmasq";
+
   commands:
+    activate_policy.enc_openldap_service_installed::
+      "/usr/bin/systemctl enable enc-openldap.service"
+        classes => if_repaired("restart_enc_service");
+
     activate_policy.restart_enc_service::
-      "$(enc_service_command)" classes => if_else("restart_enc_successful",
-                                                  "restart_enc_unsuccessful");
+      "/usr/bin/systemctl restart enc-openldap.service"
+        classes => if_else("restart_enc_successful", "restart_enc_unsuccessful");
+
+    activate_polciy.(etc_hosts_changed|restart_dnsmasq)::
+      "/usr/bin/systemctl restart dnsmasq" classes => if_repaired("dnsmasq_restart_successful");
 
   reports:
     activate_policy.restart_enc_service::
       "cf3: ENC process is not running. Restarting it";
+
+    activate_policy.enc_openldap_service_installed::
+      "cf3: ENC/ldap service has been installed";
 
     activate_policy.restart_enc_successful::
       "cf3: ENC/ldap service is restarted";
 
     activate_policy.restart_enc_unsuccessful::
       "cf3: FATAL: ENC/ldap service restart failed";
+
+    activate_policy.etc_hosts_changed::
+      "cf3: /etc/hosts file has changed";
+
+    activate_policy.dnsmasq_restart_successful::
+      "cf3: dnsmasq is successfully restarted";
 }

@@ -1,76 +1,91 @@
 bundle agent my_monitoring {
   vars:
-      "zabbix_server" string => "$(my_definitions.infra_server[app01.local.net])";
+      "zabbix_packages" slist => { "zabbix-agent", "zabbix" };
 
-      "hostname" string => "$(sys.fqhost)";
-    centos_6::
-      "zabbix_agent_restart_cmd" string => "/sbin/service zabbix-agent restart";
-    centos_7::
-      "zabbix_agent_restart_cmd" string => "/bin/systemctl restart zabbix-agent.service";
+      "ganglia_server_packages" slist => { "ganglia-gmetad", "ganglia-web" };
+      "ganglia_client_packages" slist => {
+                                         "ganglia",
+                                         "ganglia-gmond",
+                                         "ganglia-devel",
+                                         "ganglia-gmond-python",
+                                         };
+
+  classes:
+      "gmond_not_installed" not => fileexists("/usr/sbin/gmond");
+      "gmetad_not_installed" not => fileexists("/usr/sbin/gmetad");
 
   files:
-    centos::
-      "$(my_definitions.cfe_staging_dir)/monitoring/."
-        create => "true",
-        perms => mog("0755", "root", "root");
-
-      "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.mustache"
+    cfe_mps::
+      "/etc/ganglia/gmetad.conf"
         perms => mog("0644", "root", "root"),
-        copy_from => local_dcp("$(my_definitions.files_repo_dir)/zabbix_agentd.conf.mustache");
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/ganglia/gmetad.conf"),
+        classes => if_repaired("gmetad_conf_changed");
 
-      "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.stg"
-        create => "true",
+    any::
+      "/etc/ganglia/gmond.conf"
         perms => mog("0644", "root", "root"),
-        edit_defaults => empty,
-        edit_template => "$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.mustache",
-        template_method => "mustache";
-
-      "/etc/zabbix/zabbix_agentd.conf"
-        perms => mog("0644", "root", "root"),
-        copy_from =>
-          no_backup_dcp("$(my_definitions.cfe_staging_dir)/monitoring/zabbix_agentd.conf.stg"),
-        classes => if_repaired("zabbix_agentd_conf_changed");
-
-      "/etc/zabbix/zabbix_agentd.default"
-        create => "true",
-        link_from => ln_s("/etc/zabbix/zabbix_agentd.conf"),
-        move_obstructions => "true";
-
-      "/etc/zabbix/zabbix_agentd.d/userparameter_cfengine.conf"
-        perms => mog("0644", "root", "root"),
-        copy_from =>
-          no_backup_dcp("$(my_definitions.files_repo_dir)/zabbix_userparameter_cfengine.conf"),
-        classes => if_repaired("zabbix_agentd_conf_changed");
+        copy_from => local_dcp("$(my_definitions.files_repo_dir)/ganglia/gmond.conf"),
+        classes => if_repaired("gmond_conf_changed");
 
   packages:
-    centos::
-      "zabbix-agent"
+    cfe_mps.gmetad_not_installed::
+      "$(ganglia_server_packages)"
+        package_policy => "add",
+        package_method => yum_rpm,
+        package_architectures => { "x86_64" },
+        classes => if_repaired("ganglia_server_packages_installed");
+
+    centos_6.gmond_not_installed::
+      "$(ganglia_client_packages)"
         package_policy => "add",
         package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" },
+        classes => if_repaired("ganglia_client_packages_installed");
+
+    centos_7.gmond_not_installed::
+      "$(ganglia_client_packages)"
+        package_policy => "add",
+        package_method => yum_rpm,
+        package_version => "3.7.1-3.el7",
+        package_select => "==",
+        package_architectures => { "x86_64" },
+        classes => if_repaired("ganglia_client_packages_installed");
+
+    centos::
+      "$(zabbix-packages)"
+        package_policy => "delete",
+        package_method => yum_rpm,
         package_select => "==",
         package_architectures => { "x86_64" };
 
   processes:
-    centos::
-      "zabbix_agentd" restart_class => "restart_zabbix_agent";
+    cfe_mps::
+      "/usr/sbin/gmetad" restart_class => "restart_gmetad";
 
-  services:
-    centos.restart_zabbix_agent::
-      "zabbix-agent"
-        service_policy => "start",
-        classes => if_repaired("zabbix_agent_started");
+    any::
+      "/usr/sbin/gmond" restart_class => "restart_gmond";
 
   commands:
-    centos.(restart_zabbix_agent|zabbix_agentd_conf_changed)::
-      "$(zabbix_agent_restart_cmd)"
-        contain => silent,
-        classes => if_repaired("zabbix_agent_started");
+    cfe_mps::
+      "/usr/bin/systemctl enable gmetad.service";
+
+    cfe_mps.(gmetad_conf_changed|restart_gmetad)::
+      "/usr/bin/systemctl restart gmetad.service";
+
+    centos_7::
+      "/usr/bin/systemctl enable gmond.service";
+    centos_6::
+      "/sbin/chkconfig gmond on";
+
+    centos_7.(gmond_conf_changed|restart_gmond)::
+      "/usr/bin/systemctl restart gmond.service";
+    centos_6.(gmond_conf_changed|restart_gmond)::
+      "/sbin/service gmond restart";
 
   reports:
-    zabbix_agentd_conf_changed::
-      "cf3: /etc/zabbix/zabbix_agentd.conf has changed";
-    restart_zabbix_agent::
-      "cf3: zabbix agent is not running";
-    zabbix_agent_started::
-      "cf3: zabbix agent started";
+    cfe_mps.gmetad_conf_changed::
+      "cf3: /etc/ganglia/gmetad.conf has changed, restarting gmetad service";
+    any.gmond_conf_changed::
+      "cf3: /etc/ganglia/gmond.conf has changed, restarting gmond service";
 }

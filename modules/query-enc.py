@@ -119,7 +119,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        lr = LdapEnc(args.depth, "192.168.56.201", "dc=local,dc=net", "cn=Manager", "asd@123")
+        lr = LdapEnc(args.depth, "192.168.56.101", "dc=local,dc=net", "cn=Manager", "asd@123")
         result_arr = lr.search(args.enc_query)
 
     except LdapEncException as e:

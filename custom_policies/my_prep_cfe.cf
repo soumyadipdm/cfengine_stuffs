@@ -2,9 +2,7 @@ bundle agent my_prep_cfe {
   vars:
       "add_root_crontab_for_cfe"
         slist =>
-          {
-          "15 * * * * /usr/bin/python /var/cfengine/modules/revive_cfengine.py 192.168.56.201",
-          };
+          { "15 * * * * /usr/bin/python /var/cfengine/modules/revive_cfengine.py 192.168.56.201" };
 
   files:
     any::

@@ -1,0 +1,128 @@
+bundle agent my_cobbler {
+    vars:
+        "cobbler_host_ip" string => "$(my_definitions.infra_server[infra01.local.net])";
+        "cobbler_packages" slist => {
+                                    "cobbler",
+                                    "cobbler-web",
+                                    "pykickstart",
+        };
+        "cobbler_additional_packages" slist => {
+                                    "dnsmasq",
+                                    "syslinux",
+                                    "dhcp",
+                                    "xinetd",
+                                    "tftp-server",
+                                    };
+      "cobbler_config_files" slist => { "dhcp.template", "settings", "modules.conf" };
+      "cobbler_additional_services" slist => { "xinetd", "dhcpd", "httpd" };
+
+    classes:
+      cobbler_host::
+        "cobbler_installed" expression => fileexists("/usr/bin/cobblerd");
+
+        # the below class is to deploy cobbler
+        # add host's canonified fqdn here
+        # once deployed, remove the fqdn
+      cobbler_host.!cobbler_installed::
+        "deploy_cobbler" or => { "xyz_abc__" };
+
+    files:
+      cobbler_host::
+        "/etc/cobbler/$(cobbler_config_files)"
+          perms => mog("0644", "root", "root"),
+          copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cobbler/$(cobbler_config_files)"),
+          classes => if_repaired("restart_cobbler");
+
+        "/var/lib/cobbler/kickstarts/sample_end.ks"
+          perms => mog("0644", "root", "root"),
+          copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cobbler/sample_end.ks"),
+          classes => if_repaired("restart_cobbler");
+
+        "/var/lib/cobbler/snippets/network_config"
+          perms => mog("0644", "root", "root"),
+          copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cobbler/network_config"),
+          classes => if_repaired("restart_cobbler");
+
+        "/var/lib/cobbler/snippets/post_bootsrap_CFEngine"
+          perms => mog("0644", "root", "root"),
+          copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cobbler/post_bootsrap_CFEngine"),
+          classes => if_repaired("restart_cobbler");
+
+    packages:
+      cobbler_host.!cobbler_installed::
+        "$(cobbler_packages)"
+          package_policy => "add",
+          package_method => yum_rpm_permissive,
+          package_select => "==",
+          package_architectures => { "noarch" },
+          classes => if_repaired("packages_installed");
+
+        "$(cobbler_additional_packages)"
+          package_policy => "add",
+          package_method => yum_rpm_permissive,
+          package_select => "==",
+          package_architectures => { "x86_64" },
+          classes => if_repaired("packages_installed");
+
+  processes:
+    cobbler_host::
+      "/usr/bin/cobblerd" restart_class => "restart_cobbler";
+
+  commands:
+    cobbler_host.centso_7.packages_installed::
+      "/usr/bin/systemctl enable $(cobbler_additional_services)"
+      contain => silent;
+
+    cobbler_host.centso_7.packages_installed::
+      "/usr/bin/systemctl enable cobblerd"
+      contain => silent;
+
+    cobbler_host.centso_7.packages_installed::
+      "/usr/bin/systemctl restart $(cobbler_additional_services)"
+      contain => silent,
+      classes => if_else("cobbler_additional_services_success", "cobbler_additional_services_fail");
+
+    cobbler_host.centos_7.restart_cobbler::
+      "/usr/bin/systemctl restart cobblerd"
+        contain => silent,
+        classes => if_else("sync_cobbler", "restart_cobbler_failed");
+
+    cobbler_host.centos_7.(sync_cobbler|cobbler_deployed)::
+      "/usr/bin/cobbler sync"
+        #contain => silent,
+        classes => if_else("sync_cobbler_success", "sync_cobbler_failed");
+
+    ### below are the one time jobs
+    deploy_cobbler.cobbler_additional_services_success::
+      "/usr/bin/cobbler import --path=/mnt/data/repo/7/ --name=CentOS7.1 --available-as=http://192.168.56.101/repo/7"
+        contain => silent,
+        classes => if_repaired("cobbler_step2");
+
+    deploy_cobbler.cobbler_step2::
+      "/usr/bin/cobbler import --path=/mnt/data/repo/6/ --name=CentOS6.6 --available-as=http://192.168.56.101/repo/6"
+        contain => silent,
+        classes => if_repaired("cobbler_step3");
+
+    deploy_cobbler.cobbler_step3::
+      "/usr/bin/cobbler profile edit --name=CentOS6.6-x86_64 --ksmeta='default_password_crypted=$6$ByKGBjp2ZDdZqHCS$bxaVVYTSxwTIohKi9HXwv8LQyNKxigTK1VT0tDo6oBdGNzDFY5wiH2fksvTpoOG7FMHx6qKNJN99i0VbDIg440'"
+      contain => silent,
+      classes => if_repaired("cobbler_step4");
+
+    deploy_cobbler.cobbler_step4::
+      "/usr/bin/cobbler profile edit --name=CentOS7.1-x86_64 --ksmeta='default_password_crypted=$6$ByKGBjp2ZDdZqHCS$bxaVVYTSxwTIohKi9HXwv8LQyNKxigTK1VT0tDo6oBdGNzDFY5wiH2fksvTpoOG7FMHx6qKNJN99i0VbDIg440'"
+        contain => silent,
+        classes => if_repaired("cobbler_deployed");
+
+  reports:
+    cobbler_host.sync_cobbler::
+      "cf3: cobblerd is sucessfully restarted";
+
+    cobbler_host.sync_cobbler_success::
+      "cf3: cobblerd is sucessfully synced";
+
+    cobbler_host.sync_cobbler_fail::
+      "cf3: cobblerd has failed to sync";
+
+    cobbler_host.cobbler_deployed::
+      "cf3: cobbler is successfully deployed";
+}

@@ -2,7 +2,7 @@ bundle agent my_ntp {
   vars:
     any::
       "ntp_conf_file" string => "/etc/ntp.conf";
-      "infra_server_name" string => "$(my_definitions.infra_server[app01.local.net])";
+      "infra_server_name" string => "$(my_definitions.infra_server[infra01.local.net])";
       "infra_server_ip" slist => getvalues("my_definitions.infra_server");
 
     cfe_mps::
