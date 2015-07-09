@@ -35,6 +35,7 @@ bundle agent my_package {
     "dev_tools_packages_x86_64" slist => {
                                          #"mongodb",
                                          #"mongodb-server",
+                                         "mongodb-org",
                                          "python-mongoengine",
                                          "python-pymongo",
                                          };
