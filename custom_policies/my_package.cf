@@ -36,8 +36,8 @@ bundle agent my_package {
                                          #"mongodb",
                                          #"mongodb-server",
                                          "mongodb-org",
-                                         "python-mongoengine",
-                                         "python-pymongo",
+                                         #"python-mongoengine",
+                                         #"python-pymongo",
                                          };
 
   packages:
