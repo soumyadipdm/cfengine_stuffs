@@ -27,10 +27,32 @@ bundle agent my_package {
                                 "git",
                                 "mailx",
                                 };
+    "dev_tools_packages_noarch" slist => {
+                                         "python-pip",
+                                         "python-virtualenv",
+                                         "python-virtualenvwrapper",
+                                         };
+    "dev_tools_packages_x86_64" slist => {
+                                         "mongodb",
+                                         "mongodb-server",
+                                         "python-mongoengine",
+                                         "python-pymongo",
+                                         };
 
   packages:
     centos::
       "$(tools_and_libs)"
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
+
+    dev_host::
+      "$(dev_tools_packages_noarch)"
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "noarch" };
+
+      "$(dev_tools_packages_x86_64)"
         package_method => yum_rpm_permissive,
         package_select => "==",
         package_architectures => { "x86_64" };
