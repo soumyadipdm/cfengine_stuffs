@@ -10,7 +10,7 @@ bundle agent my_prep_cfe {
         create => "true",
         perms => mog("0755", "root", "root");
 
-    # there's no point in running cf-serverd in clients
+    # there's no point in running cf-serverd/cf-monitord in clients
     centos.!cfe_mps::
       "/etc/sysconfig/cfengine3"
         perms => mog("0644", "root", "root"),
