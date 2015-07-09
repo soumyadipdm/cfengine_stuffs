@@ -33,8 +33,8 @@ bundle agent my_package {
                                          "python-virtualenvwrapper",
                                          };
     "dev_tools_packages_x86_64" slist => {
-                                         "mongodb",
-                                         "mongodb-server",
+                                         #"mongodb",
+                                         #"mongodb-server",
                                          "python-mongoengine",
                                          "python-pymongo",
                                          };

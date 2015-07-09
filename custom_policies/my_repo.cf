@@ -1,6 +1,6 @@
 bundle agent my_repo {
   vars:
-      "repofiles" slist => { "CentOS-Media.repo", "epel.repo", "cfengine.repo", "zabbix.repo" };
+      "repofiles" slist => { "CentOS-Media.repo", "epel.repo", "cfengine.repo", "zabbix.repo", "mongodb.repo" };
       "reposerver" string => "$(my_definitions.infra_server[infra01.local.net])";
 
     centos_6::
