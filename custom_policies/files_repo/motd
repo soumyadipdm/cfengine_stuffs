@@ -30,3 +30,9 @@ cat <<EOF
    * Rootfs Used:        ${rootfs_usage}
 +----------------------------------------------------------------+
 EOF
+if [[ -x /usr/bin/fortune ]]
+then
+    echo "Today's fortune:"
+    /usr/bin/fortune
+    echo
+fi

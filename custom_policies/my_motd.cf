@@ -7,10 +7,10 @@ bundle agent my_motd {
       "destination" string => "/etc/profile.d/motd.sh";
 
   files:
-    linux.generic_host::
+    centos::
       "/etc/motd" delete => tidy;
 
-    linux.generic_host::
+    centos::
       "$(destination)"
         # create => "true",
         perms => mog("644", "root", "root"),
@@ -19,4 +19,11 @@ bundle agent my_motd {
       # action => if_elapsed("60"),
       # edit_template => "$(source)",
       # template_method => "mustache";
+  packages:
+    centos::
+      "fortune-mod"
+        package_policy => "add",
+        package_method => yum_rpm_permissive,
+        package_select => "==",
+        package_architectures => { "x86_64" };
 }
