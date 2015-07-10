@@ -21,6 +21,17 @@ bundle agent my_monitoring {
         copy_from => local_dcp("$(my_definitions.files_repo_dir)/ganglia/gmetad.conf"),
         classes => if_repaired("gmetad_conf_changed");
 
+      # temporary space for rrds, they are a disk
+      # hog for my lab
+      "/dev/shm/rrds/."
+        perms => mog("0764", "ganglia", "ganglia"),
+        classes => if_repaired("restart_gmetad");
+
+      "/var/lib/ganglia/rrds"
+        move_obstructions => "true",
+        link_from => ln_s("/dev/shm/rrds"),
+        classes => if_repaired("restart_gmetad");
+
     any::
       "/etc/ganglia/gmond.conf"
         perms => mog("0644", "root", "root"),

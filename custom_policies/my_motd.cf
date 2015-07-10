@@ -15,10 +15,11 @@ bundle agent my_motd {
         # create => "true",
         perms => mog("644", "root", "root"),
         copy_from => no_backup_dcp("$(source)");
-      # edit_defaults => empty,
-      # action => if_elapsed("60"),
-      # edit_template => "$(source)",
-      # template_method => "mustache";
+
+  # edit_defaults => empty,
+  # action => if_elapsed("60"),
+  # edit_template => "$(source)",
+  # template_method => "mustache";
   packages:
     centos::
       "fortune-mod"

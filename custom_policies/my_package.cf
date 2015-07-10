@@ -27,20 +27,20 @@ bundle agent my_package {
                                 "git",
                                 "mailx",
                                 };
-    "dev_tools_packages_noarch" slist => {
-                                         "python-pip",
-                                         "python-virtualenv",
-                                         "python-virtualenvwrapper",
-                                         };
-    "dev_tools_packages_x86_64" slist => {
-                                         #"mongodb",
-                                         #"mongodb-server",
-                                         "mongodb-org",
-                                         #"python-mongoengine",
-                                         #"python-pymongo",
-                                         "python-devel",
-                                         "gcc",
-                                         };
+      "dev_tools_packages_noarch" slist => {
+                                           "python-pip",
+                                           "python-virtualenv",
+                                           "python-virtualenvwrapper",
+                                           };
+      "dev_tools_packages_x86_64" slist => {
+                                           # "mongodb",
+                                           # "mongodb-server",
+                                           "mongodb-org",
+                                           # "python-mongoengine",
+                                           # "python-pymongo",
+                                           "python-devel",
+                                           "gcc",
+                                           };
 
   packages:
     centos::
