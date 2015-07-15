@@ -1,1 +1,1 @@
-/mnt/nas01/export01 -fstype=nfs,rw,hard,intr,tcp,rsize=32768,wsize=32768  nas01.local.net:/mnt/export01
+/mnt/nas01/export01 -fstype=nfs,rw,hard,intr,tcp,rsize=32768,wsize=32768,timeo=600,retrans=2  nas01.local.net:/mnt/export01
