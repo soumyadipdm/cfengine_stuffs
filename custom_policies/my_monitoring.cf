@@ -24,6 +24,7 @@ bundle agent my_monitoring {
       # temporary space for rrds, they are a disk
       # hog for my lab
       "/dev/shm/rrds/."
+        create => "true",
         perms => mog("0764", "ganglia", "ganglia"),
         classes => if_repaired("restart_gmetad");
 
