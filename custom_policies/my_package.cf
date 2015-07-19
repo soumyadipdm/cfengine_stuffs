@@ -27,6 +27,8 @@ bundle agent my_package {
                                 "git",
                                 "mailx",
                                 };
+      "tools_and_libs_versioned[smartmontools]" string => "6.2-4.el7";
+
       "dev_tools_packages_noarch" slist => {
                                            "python-pip",
                                            "python-virtualenv",
@@ -41,21 +43,32 @@ bundle agent my_package {
                                            "python-devel",
                                            "gcc",
                                            };
+      "tools_and_libs_versioned_packages" slist => getindices(tools_and_libs_versioned);
 
   packages:
     centos::
       "$(tools_and_libs)"
+        package_policy => "add",
         package_method => yum_rpm_permissive,
         package_select => "==",
         package_architectures => { "x86_64" };
 
+      "$(tools_and_libs_versioned_packages)"
+        package_policy => "add",
+        package_method => yum_rpm,
+        package_select => "==",
+        package_version => "$(tools_and_libs_versioned[$(tools_and_libs_versioned_packages)])",
+        package_architectures => { "x86_64" };
+
     dev_host::
       "$(dev_tools_packages_noarch)"
+        package_policy => "add",
         package_method => yum_rpm_permissive,
         package_select => "==",
         package_architectures => { "noarch" };
 
       "$(dev_tools_packages_x86_64)"
+        package_policy => "add",
         package_method => yum_rpm_permissive,
         package_select => "==",
         package_architectures => { "x86_64" };
