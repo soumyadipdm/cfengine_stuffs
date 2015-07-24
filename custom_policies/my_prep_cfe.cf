@@ -14,7 +14,8 @@ bundle agent my_prep_cfe {
     centos.!cfe_mps::
       "/etc/sysconfig/cfengine3"
         perms => mog("0644", "root", "root"),
-        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cfengine3");
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/cfengine3"),
+        classes => if_repaired("restart_cfengine");
 
     centos::
       "/var/spool/cron/root"
@@ -22,6 +23,15 @@ bundle agent my_prep_cfe {
         create => "true",
         perms => mog("0600", "root", "root"),
         edit_line => append_if_no_line("$(add_root_crontab_for_cfe)");
+
+  commands:
+    centos_7.restart_cfengine::
+      "/usr/bin/systemctl restart cfengine3"
+        contain => silent;
+
+    centos_6.restart_cfengine::
+      "/sbin/service cfengine3 restart"
+        contain => silent;
 
   reports:
     any::
