@@ -1,5 +1,6 @@
 # cfengine_stuffs
 Random CFEngine test promises written for my home lab
+This branch is for testing CFEngine 3.7.x
 
 Added an OpenLDAP based External Node Classification module. Take a look at promise.cf to know how I raise classes based on node's roles.
 
@@ -29,3 +30,4 @@ __Mustache Template__ => my_repo.cf, my_ntp.cf, my_resolv_conf.cf etc. promises 
 17. `my_monitoring.cf`      => Zabbix monitoring agent configuration
 18. `my_docker.cf`      => Docker configuration policy
 19. `my_managee_mps.cf`      => Manages master policy server, right now it installs and configures OpenLDAP based External Node Classifier system
+... and many more
