@@ -1,5 +1,6 @@
 # cfengine_stuffs
 Random CFEngine test promises written for my home lab
+
 This branch is for testing CFEngine 3.7.x
 
 Added an OpenLDAP based External Node Classification module. Take a look at promise.cf to know how I raise classes based on node's roles.
