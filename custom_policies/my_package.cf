@@ -33,6 +33,10 @@ bundle agent my_package {
                                            "python-pip",
                                            "python-virtualenv",
                                            "python-virtualenvwrapper",
+                                           "golang-vim",
+                                           "python-pep8",
+                                           "python-flake8",
+                                           "pylint",
                                            };
       "dev_tools_packages_x86_64" slist => {
                                            # "mongodb",
@@ -42,6 +46,7 @@ bundle agent my_package {
                                            # "python-pymongo",
                                            "python-devel",
                                            "gcc",
+                                           "golang",
                                            };
       "tools_and_libs_versioned_packages" slist => getindices(tools_and_libs_versioned);
 
