@@ -10,6 +10,10 @@ bundle agent my_prep_cfe {
         create => "true",
         perms => mog("0755", "root", "root");
 
+      "/usr/bin/query-enc"
+        perms => mog("0755", "root", "root"),
+        copy_from => no_backup_dcp("/var/cfengine/modules/query-enc.py");
+
     # there's no point in running cf-serverd/cf-monitord in clients
     centos.!cfe_mps::
       "/etc/sysconfig/cfengine3"
