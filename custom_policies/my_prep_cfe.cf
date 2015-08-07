@@ -11,6 +11,7 @@ bundle agent my_prep_cfe {
         perms => mog("0755", "root", "root");
 
       "/usr/bin/query-enc"
+        create => "true",
         perms => mog("0755", "root", "root"),
         copy_from => no_backup_dcp("/var/cfengine/modules/query-enc.py");
 
