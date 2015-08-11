@@ -16,7 +16,8 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_repo]" string => "$(custom_policies_dir)/my_repo.cf";
       "custom_bundle_inputs[my_prep_cfe]" string => "$(custom_policies_dir)/my_prep_cfe.cf";
       "custom_bundle_inputs[my_manage_mps]" string => "$(custom_policies_dir)/my_manage_mps.cf";
-      "custom_bundle_inputs[my_cobbler]" string => "$(custom_policies_dir)/my_cobbler.cf";
+      # commented it for testing foreman
+      # "custom_bundle_inputs[my_cobbler]" string => "$(custom_policies_dir)/my_cobbler.cf";
       "custom_bundle_inputs[my_autofs]" string => "$(custom_policies_dir)/my_autofs.cf";
       "custom_bundle_inputs[my_dns]" string => "$(custom_policies_dir)/my_dns.cf";
       "custom_bundle_inputs[my_user]" string => "$(custom_policies_dir)/my_user.cf";

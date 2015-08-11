@@ -53,10 +53,9 @@ bundle agent my_package {
   packages:
     centos::
       "$(tools_and_libs)"
-        package_policy => "add",
-        package_method => yum_rpm_permissive,
-        package_select => "==",
-        package_architectures => { "x86_64" };
+        policy => "present",
+        package_module => yum,
+        architecture => "x86_64";
 
       "$(tools_and_libs_versioned_packages)"
         package_policy => "add",
