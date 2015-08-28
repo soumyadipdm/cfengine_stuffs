@@ -16,7 +16,7 @@ cd ${git_staging_dir}
 
 /usr/bin/rsync --no-p ${git_staging_dir}/promise_cf/promises.cf ${cfe_masterfiles_dir}/promises.cf
 
-/usr/bin/rsync -av --no-p --delete ${git_staging_dir}/modules/ /var/cfengine/modules/
+/usr/bin/rsync -av --no-p ${git_staging_dir}/modules/ /var/cfengine/modules/
 
 /bin/chown root:root /var/cfengine/modules/.
 /bin/chown root:root /var/cfengine/modules/*
