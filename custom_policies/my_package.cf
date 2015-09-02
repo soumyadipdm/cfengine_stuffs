@@ -19,6 +19,7 @@ bundle agent my_package {
                                 "sysstat",
                                 "iotop",
                                 "nmap",
+                                "dstat",
                                 "nmon",
                                 "tcpdump",
                                 "nc",
