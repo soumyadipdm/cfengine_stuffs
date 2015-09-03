@@ -25,7 +25,7 @@ bundle agent my_test {
       "$(sys.local_libdir)";
 }
 
-bundle agent my_bundle("arg1") {
+bundle agent my_bundle(arg1) {
   reports:
     "this is the report";
 }
