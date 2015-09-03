@@ -1,4 +1,6 @@
 bundle agent my_test {
+  vars:
+      "mylist" slist => { "one", "two", "three" };
   classes:
     generic_host.!ubuntu_desktop::
       "tmp_cf_file_exists" and => { fileexists("/tmp/cf_file"), islink("/tmp/cf_file") };
@@ -6,6 +8,8 @@ bundle agent my_test {
   files:
     generic_host.!tmp_cf_file_exists::
       "/tmp/cf_file" create => "true";
+  methods:
+      "any" usebundle => my_bundle("$(mylist)");
 
   reports:
     generic_host.tmp_cf_file_exists::
@@ -19,4 +23,9 @@ bundle agent my_test {
 
     generic_host::
       "$(sys.local_libdir)";
+}
+
+bundle agent my_bundle("arg1") {
+  reports:
+    "this is the report";
 }
