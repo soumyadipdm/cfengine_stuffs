@@ -26,6 +26,7 @@ bundle common custom_policy {
       "custom_bundle_inputs[my_package]" string => "$(custom_policies_dir)/my_package.cf";
       "custom_bundle_inputs[my_freespace]" string => "$(custom_policies_dir)/my_freespace.cf";
       "custom_bundle_inputs[my_services]" string => "$(custom_policies_dir)/my_services.cf";
+      "custom_bundle_inputs[my_syslog]" string => "$(custom_policies_dir)/my_syslog.cf";
       #"custom_bundle_inputs[my_test]" string => "$(custom_policies_dir)/my_test.cf";
       # "custom_bundle_inputs[my_env]" string => "$(custom_policies_dir)/my_env.cf";
       "custom_bundle_inputs[my_update_cfe]" string => "$(custom_policies_dir)/my_update_cfe.cf";

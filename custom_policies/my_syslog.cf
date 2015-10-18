@@ -1,0 +1,20 @@
+bundle agent my_syslog {
+  files:
+    centos::
+      "/etc/rsyslog.d/forward_syslog.conf"
+        perms => mog("0644", "root", "root"),
+        copy_from => no_backup_dcp("$(my_definitions.files_repo_dir)/forward_syslog.conf"),
+        classes => if_repaired("restart_rsyslog");
+
+  commands:
+    centos.restart_rsyslog::
+      "/sbin/service rsyslog restart" classes => if_else("rsyslog_success", "rsyslog_failed");
+
+  reports:
+    restart_rsyslog::
+      "cf3: rsyslog service restart needed";
+    rsyslog_success::
+      "cf3: rsyslog service restart successful";
+    rsyslog_failed::
+      "cf3: rsyslog service restart failed";
+}
