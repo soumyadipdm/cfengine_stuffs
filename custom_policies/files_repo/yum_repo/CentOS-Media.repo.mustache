@@ -1,11 +1,11 @@
-[base]
+[mediarepo]
 name=CentOS-$releasever - Base
 
 baseurl=http://{{vars.my_repo.reposerver}}/repo/{{vars.my_repo.rhel_version}}/
 gpgcheck=0
 enabled=1
 
-[extras]
+[extrasrepo]
 name=CentOS Extras
 mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras
 #baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
