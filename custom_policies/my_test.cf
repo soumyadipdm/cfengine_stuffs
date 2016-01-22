@@ -1,20 +1,29 @@
 bundle agent my_test {
   vars:
-      "mylist" slist => { "one", "two", "three" };
-      "jsonlist" data => readjson("/var/cfengine/inputs/custom_policies/files_repo/test.json", 9999999);
+      "mylist" slist => { "one", "two", "three", "four" };
+      #"jsonlist" data => readjson("/var/cfengine/inputs/custom_policies/files_repo/test.json");
+      "jsonlist" data => mergedata();
   classes:
+    "thisclass" select_class => { @(mylist) };
     generic_host.!ubuntu_desktop::
       "tmp_cf_file_exists" and => { fileexists("/tmp/cf_file"), islink("/tmp/cf_file") };
 
   files:
     generic_host.!tmp_cf_file_exists::
       "/tmp/cf_file" create => "true";
+    any::
+      "/tmp/template.conf"
+        edit_template => "/tmp/template.mustache",
+        create => "true",
+        template_method => "mustache",
+        template_data => parsejson('{"hostname": "$(sysuqhost)", "name": "Danilo", "fruits": "apple,banana,watermelon" }');
   methods:
       "any" usebundle => my_bundle("$(mylist)");
 
   reports:
     any::
       "$(jsonlist[this_range])";
+      "$(jsonlist)";
     generic_host.tmp_cf_file_exists::
       "/tmp/cf_file exists and it's a link";
 
@@ -26,6 +35,16 @@ bundle agent my_test {
 
     generic_host::
       "$(sys.local_libdir)";
+    one::
+      "one";
+    two::
+      "two";
+    three::
+      "three";
+    four::
+      "four";
+    thisclass::
+      "select was made";
 }
 
 bundle agent my_bundle(arg1) {

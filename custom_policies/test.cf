@@ -1,0 +1,14 @@
+body common control {
+  bundlesequence => { "test_select_class" };
+}
+
+bundle agent test_select_class {
+  vars:
+      "mps" slist => {"mps1", "mps2", "mps3", "mps4"};
+  classes:
+      "pick" select_class => { @(mps) };
+  reports:
+    any::
+      "pick_class picked $(mps)"
+        ifvarclass => "$(mps)";
+}
