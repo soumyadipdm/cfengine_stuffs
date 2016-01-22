@@ -78,7 +78,7 @@ bundle agent my_cobbler {
         contain => silent,
         classes => if_else("sync_cobbler", "restart_cobbler_failed");
 
-    cobbler_host.centos_7.(sync_cobbler|cobbler_deployed)::
+    cobbler_host.centos_7.(sync_cobbler|cobbler_deployed|deploy_cobbler)::
       "/usr/bin/cobbler sync"
         # contain => silent,
         classes => if_else("sync_cobbler_success", "sync_cobbler_failed");
