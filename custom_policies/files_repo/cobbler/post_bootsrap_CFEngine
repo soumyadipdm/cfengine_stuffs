@@ -13,7 +13,7 @@ cat >>/etc/rc.d/rc.local <<'EOF'
 
 declare -r repo_srv="192.168.56.101"
 declare -r cfengine_el6="cfengine-community-3.6.5-1.x86_64.rpm"
-declare -r cfengine_el7="cfengine-community-3.6.5-1.el7.x86_64.rpm"
+declare -r cfengine_el7="cfengine-community-3.7.2-1.x86_64.rpm"
 
 if [[ -f /etc/centos-release ]]; then
     release=$( egrep -o "release 7|6\." /etc/centos-release )
