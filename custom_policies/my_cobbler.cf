@@ -76,7 +76,12 @@ bundle agent my_cobbler {
     cobbler_host.centos_7.restart_cobbler::
       "/usr/bin/systemctl restart cobblerd"
         contain => silent,
-        classes => if_else("sync_cobbler", "restart_cobbler_failed");
+        classes => if_else("reload_httpd", "restart_cobbler_failed");
+
+    cobbler_host.centos_7.sync_cobbler::
+      "/usr/bin/systemctl reload httpd"
+        contain => silent,
+        classes => if_else("sync_cobbler", "reload_httpd_failed");
 
     cobbler_host.centos_7.(sync_cobbler|cobbler_deployed|deploy_cobbler)::
       "/usr/bin/cobbler sync"
