@@ -73,12 +73,6 @@ bundle agent my_cobbler {
     cobbler_host.centso_7.packages_installed::
       "/usr/bin/systemctl enable cobblerd" contain => silent;
 
-    cobbler_host.centso_7.packages_installed::
-      "/usr/bin/systemctl restart $(cobbler_additional_services)"
-        contain => silent,
-        classes => if_else("cobbler_additional_services_success",
-                           "cobbler_additional_services_fail");
-
     cobbler_host.centos_7.restart_cobbler::
       "/usr/bin/systemctl restart cobblerd"
         contain => silent,
@@ -90,7 +84,7 @@ bundle agent my_cobbler {
         classes => if_else("sync_cobbler_success", "sync_cobbler_failed");
 
     ### below are the one time jobs
-    deploy_cobbler.cobbler_additional_services_success::
+    deploy_cobbler::
       "/usr/bin/cobbler import --path=/mnt/data/repo/7/ --name=CentOS7.1 --available-as=http://192.168.56.101/repo/7"
         contain => silent,
         classes => if_repaired("cobbler_step2");
