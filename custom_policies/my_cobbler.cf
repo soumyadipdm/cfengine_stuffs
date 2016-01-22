@@ -86,22 +86,22 @@ bundle agent my_cobbler {
     ### below are the one time jobs
     deploy_cobbler::
       "/usr/bin/cobbler import --path=/mnt/data/repo/7/ --name=CentOS7.1 --available-as=http://192.168.56.101/repo/7"
-        contain => silent,
+        # contain => silent,
         classes => if_repaired("cobbler_step2");
 
     deploy_cobbler.cobbler_step2::
       "/usr/bin/cobbler import --path=/mnt/data/repo/6/ --name=CentOS6.6 --available-as=http://192.168.56.101/repo/6"
-        contain => silent,
+        # contain => silent,
         classes => if_repaired("cobbler_step3");
 
     deploy_cobbler.cobbler_step3::
       "/usr/bin/cobbler profile edit --name=CentOS6.6-x86_64 --ksmeta='default_password_crypted=$6$ByKGBjp2ZDdZqHCS$bxaVVYTSxwTIohKi9HXwv8LQyNKxigTK1VT0tDo6oBdGNzDFY5wiH2fksvTpoOG7FMHx6qKNJN99i0VbDIg440'"
-        contain => silent,
+        # contain => silent,
         classes => if_repaired("cobbler_step4");
 
     deploy_cobbler.cobbler_step4::
       "/usr/bin/cobbler profile edit --name=CentOS7.1-x86_64 --ksmeta='default_password_crypted=$6$ByKGBjp2ZDdZqHCS$bxaVVYTSxwTIohKi9HXwv8LQyNKxigTK1VT0tDo6oBdGNzDFY5wiH2fksvTpoOG7FMHx6qKNJN99i0VbDIg440'"
-        contain => silent,
+        # contain => silent,
         classes => if_repaired("cobbler_deployed");
 
   reports:
