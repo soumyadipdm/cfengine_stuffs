@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=forking
 ExecStart=/export/content/openldap/libexec/slapd -u openldap -g openldap -h "ldap:// ldaps://"
+Restart=always
 
 [Install]
 WantedBy=default.target
